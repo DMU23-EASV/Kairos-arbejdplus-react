@@ -2,9 +2,9 @@ import TextField from '@mui/material/TextField';
 import InputAdornment from '@mui/material/InputAdornment';
 
 function TimeCompBasic() {
-    
+
     return (
-    
+
         <div>
             <TextField
                 label="Start tid"
