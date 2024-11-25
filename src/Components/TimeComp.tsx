@@ -4,7 +4,7 @@ import InputAdornment from "@mui/material/InputAdornment";
 import {Icon, IconButton} from "@mui/material";
 import AccessTimeSharpIcon from '@mui/icons-material/AccessTimeSharp';
 
-function TimeComp() {
+function TimeComp({title} : {title: string}) {
     
     // Get current time
     // Note: .toString().padStart(2,'0') adds a leading zero if needed
@@ -30,7 +30,7 @@ function TimeComp() {
     return (
         <div>
             <TextField
-                label="Start tid"
+                label={title}
                 id="outlined-start-adornment"
                 sx={{m: 1, width: '25ch'}}
                 value={inputValue}
