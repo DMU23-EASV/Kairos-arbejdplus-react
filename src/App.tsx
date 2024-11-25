@@ -10,10 +10,17 @@ function App() {
 
     return (
         <div>
-            <TimeComp title={"Tid Start"} />
+            <table>
+                <tbody>
+                    <TimeComp title={"Tid Start"}/>
+                    <TimeComp title={"Tid Slut"}/>
+                </tbody>
+            </table>
         </div>
-        
-    );
+
+   
+
+);
 }
 
 export default App;

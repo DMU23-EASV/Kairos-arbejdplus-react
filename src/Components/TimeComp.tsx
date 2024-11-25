@@ -1,55 +1,67 @@
 import TextField from '@mui/material/TextField';
-import React, {useState} from 'react';
+import React, { useState } from 'react';
 import InputAdornment from "@mui/material/InputAdornment";
-import {Icon, IconButton} from "@mui/material";
+import { IconButton } from "@mui/material";
 import AccessTimeSharpIcon from '@mui/icons-material/AccessTimeSharp';
 
-function TimeComp({title} : {title: string}) {
+function TimeComp({ title }: { title: string }) {
     
     // Get current time
-    // Note: .toString().padStart(2,'0') adds a leading zero if needed
+    // note: .padStart(2, '0') adds a leading zero if needed
     const date = new Date();
-    const timeNow = `${date.getHours().toString().padStart(2,'0')}:${date.getMinutes().toString().padStart(2,'0')}`;
+    const timeNow = `${date.getHours().toString().padStart(2, '0')}:${date.getMinutes().toString().padStart(2, '0')}`;
 
-    // Displays current time in textfield
-    const btnTimeNow = () => {
+    // State management for the input value and error status
+    // inputValue stores the current text input, updated via setInputValue (like a "setter").
+    // error tracks if the input is invalid, toggled via setError.
+    const [inputValue, setInputValue] = useState<string>('');
+    const [error, setError] = useState<boolean>(false);
+
+    // Validates time input from user using regex (hh:mm format)
+    const isValidTime = (value: string): boolean => {
+        const timeRegex = /^([01]?[0-9]|2[0-3]):[0-5][0-9]$/;
+        return timeRegex.test(value);
+    };
+
+    // Handles input changes and validates dynamically
+    const handleInputChange = (event: React.ChangeEvent<HTMLInputElement>) => {
+        const value = event.target.value;
+        // updates input value
+        setInputValue(value); 
+        // sets error = true if input value isn't valid 
+        setError(value != '' && !isValidTime(value)); 
+    };
+
+    // Updates input with the current time (button click event)
+    const setTimeNow = () => {
         setInputValue(timeNow);
+        setError(false);
     };
-    
-    
-    // Sets the input value when the user types or uses the time button
-    const [inputValue, setInputValue ] = useState('');
-    
-    // Handles input changes
-    const handleInputChange = (event:any) => {
-        setInputValue(event.target.value);
-        console.log(inputValue);
-    };
-    
-    
+
     return (
         <div>
             <TextField
                 label={title}
                 id="outlined-start-adornment"
-                sx={{m: 1, width: '25ch'}}
+                sx={{ m: 1, width: '25ch' }}
                 value={inputValue}
                 onChange={handleInputChange}
+                error={error}
+                // text if error : text if no error
+                helperText={error ? 'Indtast gyldigt tidspunkt (hh:mm)' : ''}
                 InputProps={{
-                    startAdornment: <InputAdornment position="start"></InputAdornment>,
+                    startAdornment: <InputAdornment position="start" />,
                     endAdornment: (
                         <InputAdornment position="end">
-                            <IconButton onClick={btnTimeNow}>
-                              <Icon>  
-                                  <AccessTimeSharpIcon/>
-                              </Icon>
-                              </IconButton>
+                            <IconButton onClick={setTimeNow}>
+                                <AccessTimeSharpIcon />
+                            </IconButton>
                         </InputAdornment>
                     ),
                 }}
             />
         </div>
-        
     );
 }
+
 export default TimeComp;
