@@ -1,16 +1,17 @@
 import './App.css'
-import PhoneScreen from "./PhoneScreen.tsx";
-import LoginComp from "./Components/LoginComp.tsx"
+//import PhoneScreen from "./PhoneScreen.tsx";
+//import LoginComp from "./Components/LoginComp.tsx"
+
+import TimeCompBasic from "./Components/TimeCompBasic.tsx";
 
 
 
 function App() {
 
     return (
-        
-        <PhoneScreen>
-            <LoginComp />
-        </PhoneScreen>
+        <div>
+            <TimeCompBasic />
+        </div>
         
     );
 }
