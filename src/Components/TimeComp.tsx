@@ -27,7 +27,7 @@ function TimeComp({ title }: { title: string }) {
     const handleInputChange = (event: React.ChangeEvent<HTMLInputElement>) => {
         const value = event.target.value;
         // updates input value
-        setInputValue(value); 
+        setInputValue(value);  
         // sets error = true if input value isn't valid 
         setError(value != '' && !isValidTime(value)); 
     };

@@ -21,7 +21,7 @@ export default function ButtonAppBar({ isLoggedIn, onLogout }: LoginCompProps) {
                     position: 'absolute', 
                     top: 0, 
                     left: 0,
-                    backgroundColor: 'AppWorkspace', 
+                    backgroundColor: 'black', 
                     }}>
                 <Toolbar>
                     <IconButton

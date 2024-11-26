@@ -4,6 +4,7 @@ import { AuthProvider, useAuth } from "./Services/AuthProvider";
 import BottomNavigationComp from "./Components/BottomNavigationComp.tsx";
 import TopNavigationComp from "./Components/TopNavigationComp.tsx";
 import LoginComp from "./Components/LoginComp.tsx";
+import React from "react";
 
 function App() {
     return (
