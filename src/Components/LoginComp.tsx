@@ -1,6 +1,7 @@
 import Box from '@mui/material/Box';
 import TextField from '@mui/material/TextField';
 import Button from '@mui/material/Button';
+import {APP_NAME} from "../Constants.ts";
 
 interface LoginCompProps {
     onLogin: () => void; // Needs to be changed to some form of login validation call
@@ -26,7 +27,7 @@ export default function LoginComp({ onLogin }: LoginCompProps) {
                     fontSize: 62,
                     color: 'black',
                     }}>
-                    ArbejdPlus
+                    {APP_NAME}
                 </label>
 
             </div>
