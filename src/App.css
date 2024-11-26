@@ -5,6 +5,10 @@
   text-align: center;
 }
 
+.timeIcon-button:focus{
+  outline: none;
+  box-shadow: none;
+}
 
 .regComponent-wrapper {
   display: flex;
