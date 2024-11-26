@@ -1,7 +1,8 @@
-import Box from '@mui/material/Box';
 import TextField from '@mui/material/TextField';
 import Button from '@mui/material/Button';
 import {APP_NAME} from "../Constants.ts";
+import {Link} from "react-router-dom";
+import './LoginComp.css'
 
 interface LoginCompProps {
     onLogin: () => void; // Needs to be changed to some form of login validation call
@@ -14,13 +15,8 @@ let password: string = ""
 export default function LoginComp({ onLogin }: LoginCompProps) {
     
     return (
-
-        <Box
-            component="form"
-            sx={{'& .MuiTextField-root': {m: 1, width: '25ch'}}}
-            noValidate
-            autoComplete="off"
-        >
+        
+        <div className='Login-wrapper'>
             <div style={{ marginBottom: 50}}>
                 <label style={{ 
                     fontFamily: 'Maven Pro', 
@@ -33,6 +29,7 @@ export default function LoginComp({ onLogin }: LoginCompProps) {
             </div>
             <div>
                 <TextField
+                    style={{marginBottom: 10}}
                     id="outlined-required"
                     label="Brugernavn"
                     defaultValue=""
@@ -47,14 +44,21 @@ export default function LoginComp({ onLogin }: LoginCompProps) {
                     value={password}
                 />
             </div>
-            <div style={{ marginTop: 20 }}>
-                <Button 
+            <div className='login-wrapper-buttons'>
+                <Button
                     variant="contained"
-                    onClick={onLogin}> 
+                    onClick={onLogin}
+                    component={Link}
+                    to="/tasks"
+                >
                     Login
                 </Button>
+                
+                <Button variant="contained"> 
+                    Forgot Password
+                </Button>
+                
             </div>
-
-        </Box>
+        </div>
     );
 }
