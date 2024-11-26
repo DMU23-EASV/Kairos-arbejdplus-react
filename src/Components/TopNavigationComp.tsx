@@ -6,6 +6,7 @@ import Button from '@mui/material/Button';
 import IconButton from '@mui/material/IconButton';
 import HomeIcon from '@mui/icons-material/Home';
 import { Link } from 'react-router-dom';
+import { APP_NAME } from "../Constants.ts";
 
 
 interface LoginCompProps {
@@ -36,7 +37,7 @@ export default function ButtonAppBar({ isLoggedIn, onLogout }: LoginCompProps) {
                         <HomeIcon />
                     </IconButton>
                     <Typography variant="h6" component="div" sx={{ flexGrow: 1, fontFamily: "Maven Pro"}}>
-                        ArbejdPlus
+                        {APP_NAME}
                     </Typography>
                     {isLoggedIn ? (
                         <Button 

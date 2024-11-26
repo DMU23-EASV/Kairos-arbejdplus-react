@@ -4,6 +4,7 @@ import { AuthProvider, useAuth } from "./Services/AuthProvider";
 import BottomNavigationComp from "./Components/BottomNavigationComp.tsx";
 import TopNavigationComp from "./Components/TopNavigationComp.tsx";
 import LoginComp from "./Components/LoginComp.tsx";
+import TimeComp from "./Components/TimeComp.tsx";
 import React from "react";
 import StartRegComp from "./Components/StartRegComp.tsx";
 
