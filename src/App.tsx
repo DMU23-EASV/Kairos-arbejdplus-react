@@ -30,7 +30,7 @@ const Main: React.FC = () => {
                         <Route path="/history" element={<h1 style={{color: 'black'}}>History Page</h1>} />
                         <Route path="/notifications" element={<h1 style={{color: 'black'}}>Notifications Page</h1>} />
                     </Routes>
-                    <BottomNavigationComp />o
+                    <BottomNavigationComp />
                     
                 </>
             ) : (
