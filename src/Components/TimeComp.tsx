@@ -39,8 +39,8 @@ function TimeComp({ title }: { title: string }) {
     };
 
     return (
-        <div>
-            <TextField
+        <div className='regComponent-container'>
+            <TextField className={'labels-taskRegistration'}
                 label={title}
                 id="outlined-start-adornment"
                 sx={{ m: 1, width: '25ch' }}

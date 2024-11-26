@@ -5,7 +5,8 @@ import BottomNavigationComp from "./Components/BottomNavigationComp.tsx";
 import TopNavigationComp from "./Components/TopNavigationComp.tsx";
 import LoginComp from "./Components/LoginComp.tsx";
 import React from "react";
-import KmComp from "./Components/KmComp.tsx";
+import StartRegComp from "./Components/StartRegComp.tsx";
+
 
 function App() {
     return (
@@ -28,14 +29,12 @@ const Main: React.FC = () => {
                     <Routes>
                         <Route path="/" element={<h1 style={{color: 'black'}}>Body Goes Here</h1>} />
                         <Route path="/tasks" element={
-                            <div>
-                                <KmComp title={"Km start"}/>
-                            </div>
+                                <StartRegComp/>
                         } />
                         <Route path="/history" element={<h1 style={{color: 'black'}}>History Page</h1>} />
                         <Route path="/notifications" element={<h1 style={{color: 'black'}}>Notifications Page</h1>} />
                     </Routes>
-                    <BottomNavigationComp />o
+                    <BottomNavigationComp />
                     
                 </>
             ) : (

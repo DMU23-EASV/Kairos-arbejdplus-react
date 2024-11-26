@@ -14,7 +14,7 @@ function KmComp({ title }: { title: string }) {
     
     // Validates km input from user using regex (only numbers)
     const isValidKm = (value: string): boolean => {
-        const timeRegex = /^(?:[0-9]{1,6}|1000000)$/;
+        const timeRegex = /^(?:[1-9][0-9]{0,5}|0|1000000)$/;
         return timeRegex.test(value);
     };
 
@@ -30,7 +30,7 @@ function KmComp({ title }: { title: string }) {
    
 
     return (
-        <div>
+        <div className='regComponent-container'>
             <TextField
                 label={title}
                 id="outlined-start-adornment"
