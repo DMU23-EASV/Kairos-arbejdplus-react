@@ -6,6 +6,10 @@ interface LoginCompProps {
     onLogin: () => void; // Needs to be changed to some form of login validation call
 }
 
+let username: string = ""
+let password: string = ""
+
+
 export default function LoginComp({ onLogin }: LoginCompProps) {
     
     return (
@@ -29,15 +33,17 @@ export default function LoginComp({ onLogin }: LoginCompProps) {
             <div>
                 <TextField
                     id="outlined-required"
-                    label="Username"
+                    label="Brugernavn"
                     defaultValue=""
                     color="primary"
+                    value={username}
                 />
                 <TextField
                     id="outlined-password-input"
-                    label="Password"
+                    label="Kodeord"
                     type="password"
                     color="primary"
+                    value={password}
                 />
             </div>
             <div style={{ marginTop: 20 }}>
