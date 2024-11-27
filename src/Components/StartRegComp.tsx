@@ -17,15 +17,15 @@ const StartRegComp: React.FC<StartRegCompProps> = ({ timeStart, kmStart, onTimeC
     const [startKm, setStartKm] = useState<string>(kmStart);
 
     // Handles time updates
-    const handleStartTimeChange = (StartTimeValue: string) => {
-        setStartTime(StartTimeValue); 
-        onTimeChange(StartTimeValue);
+    const handleStartTimeChange = (startTimeValue: string) => {
+        setStartTime(startTimeValue); 
+        onTimeChange(startTimeValue);
     };
 
     // Handles km updates
-    const handleStartKmChange = (StartKmValue: string) => {
-        setStartKm(StartKmValue); 
-        onKmChange(StartKmValue);
+    const handleStartKmChange = (startKmValue: string) => {
+        setStartKm(startKmValue); 
+        onKmChange(startKmValue);
     };
     
     
