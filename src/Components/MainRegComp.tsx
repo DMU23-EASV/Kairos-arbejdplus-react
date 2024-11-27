@@ -1,7 +1,8 @@
 import StartRegComp from './StartRegComp';
 import {useState} from "react";
 import RemarkComp from "./RemarkComp.tsx";
-import remarkComp from "./RemarkComp.tsx"; // Importer StartRegComp
+import remarkComp from "./RemarkComp.tsx";
+import RegTaskHeadlineComp from "./RegTaskHeadlineComp.tsx"; // Importer StartRegComp
 
 function MainRegComp() {
     // State til at gemme start tid og km
@@ -31,6 +32,11 @@ function MainRegComp() {
 
     return (
         <div>
+            <RegTaskHeadlineComp
+                title={"Ny tidsregistrering"}
+                date={"11. november 2024"}
+                />
+            
             <StartRegComp
                 titleStartTime={"Start tid"}
                 titleStartKm={"Start km"}
