@@ -3,16 +3,20 @@ import Button from '@mui/material/Button';
 import {APP_NAME} from "../Constants.ts";
 import {Link} from "react-router-dom";
 import './LoginComp.css'
+import {useState} from "react";
 
 interface LoginCompProps {
-    onLogin: () => void; // Needs to be changed to some form of login validation call
+    onLogin: (username: string, password: string) => void; 
 }
 
-let username: string = ""
-let password: string = ""
-
-
 export default function LoginComp({ onLogin }: LoginCompProps) {
+    
+    const [username, setUsername] = useState<string>("");
+    const [password, setPassword] = useState<string>("");
+    
+    const handleLogin = () => {
+        onLogin(username, password); // Needs to be changed to some form of login validation call
+    }
     
     return (
         
@@ -35,6 +39,7 @@ export default function LoginComp({ onLogin }: LoginCompProps) {
                     defaultValue=""
                     color="primary"
                     value={username}
+                    onChange={(e) => setUsername(e.target.value)}
                 />
                 <TextField
                     id="outlined-password-input"
@@ -42,12 +47,13 @@ export default function LoginComp({ onLogin }: LoginCompProps) {
                     type="password"
                     color="primary"
                     value={password}
+                    onChange={(e) => setPassword(e.target.value)}
                 />
             </div>
             <div className='login-wrapper-buttons'>
                 <Button
                     variant="contained"
-                    onClick={onLogin}
+                    onClick={handleLogin}
                     component={Link}
                     to="/tasks"
                 >
