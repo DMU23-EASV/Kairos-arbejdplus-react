@@ -10,6 +10,7 @@ interface TimeCompProps {
     onChange: (value: string) => void; 
 }
 
+// TimeComp is a functional component that uses the TimeCompProps interface to define the props ({ title, value, onChange }).
 const TimeComp: React.FC<TimeCompProps> = ({ title, value, onChange }) => {
     
     // Get current time
@@ -17,7 +18,7 @@ const TimeComp: React.FC<TimeCompProps> = ({ title, value, onChange }) => {
     const date = new Date();
     const timeNow = `${date.getHours().toString().padStart(2, '0')}:${date.getMinutes().toString().padStart(2, '0')}`;
 
-    // State management for the input value and error status
+    // State management for the time input value and error status
     // inputValue stores the current text input, updated via setInputValue (like a "setter").
     // error tracks if the input is invalid, toggled via setError.
     const [inputValue, setInputValue] = useState<string>(value);

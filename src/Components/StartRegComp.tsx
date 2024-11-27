@@ -3,43 +3,45 @@ import KmComp from "./KmComp.tsx";
 import {useState} from "react";
 
 interface StartRegCompProps {
-    time: string;                // Start tid som en string
-    km: string;                  // Start km som en string
-    onTimeChange: (newTime: string) => void; // Funktion til at opdatere tid
-    onKmChange: (newKm: string) => void;     // Funktion til at opdatere km
+    timeStart: string;                
+    kmStart: string;                  
+    onTimeChange: (timeValue: string) => void; 
+    onKmChange: (kmValue: string) => void;     
 }
 
-const StartRegComp: React.FC<StartRegCompProps> = ({ time, km, onTimeChange, onKmChange }) => {
+// StartRegComp is a functional component that uses the StartRegCompProps interface to define the props ({ time, km, onTimeChange, onKmChange }).
+const StartRegComp: React.FC<StartRegCompProps> = ({ timeStart, kmStart, onTimeChange, onKmChange }) => {
+    
+    // State management for the start time value and start km value
+    const [startTime, setStartTime] = useState<string>(timeStart);
+    const [startKm, setStartKm] = useState<string>(kmStart);
 
-    const [startTime, setTime] = useState<string>(time);
-    const [startKm, setKm] = useState<string>(km);
-
-    // Håndterer opdatering af tid
-    const handleTimeChange = (newTime: string) => {
-        setTime(newTime); // Opdaterer time
-        onTimeChange(newTime);
+    // Handles time updates
+    const handleStartTimeChange = (StartTimeValue: string) => {
+        setStartTime(StartTimeValue); 
+        onTimeChange(StartTimeValue);
     };
 
-    // Håndterer opdatering af kilometer
-    const handleKmChange = (newKm: string) => {
-        setKm(newKm); // Opdaterer km
-        onKmChange(newKm);
+    // Handles km updates
+    const handleStartKmChange = (StartKmValue: string) => {
+        setStartKm(StartKmValue); 
+        onKmChange(StartKmValue);
     };
+    
     
     return (
-    
-        <div className='regComponent-wrapper'>
+        
+            <div className='regComponent-wrapper'>
                 <TimeComp title={"Start tid"}
                           value={startTime}
-                          onChange={handleTimeChange}/>
-            
-                <KmComp title={"Slut km"}
-                        value={startKm}       
-                        onChange={handleKmChange}/>
-        </div>  
-        
+                          onChange={handleStartTimeChange}/>
+
+                <KmComp title={"Start km"}
+                        value={startKm}
+                        onChange={handleStartKmChange}/>
+            </div>
     );
-    
+
 }
 
 export default StartRegComp;

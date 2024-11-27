@@ -21,8 +21,8 @@ function MainRegComp() {
     return (
         <div>
             <StartRegComp
-                time={startTime}
-                km={startKm}
+                timeStart={startTime}
+                kmStart={startKm}
                 onTimeChange={handleStartTimeChange}
                 onKmChange={handleStartKmChange}
             />
