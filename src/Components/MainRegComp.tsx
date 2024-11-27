@@ -1,12 +1,18 @@
 import StartRegComp from './StartRegComp';
-import {useState} from "react"; // Importer StartRegComp
+import {useState} from "react";
+import RemarkComp from "./RemarkComp.tsx";
+import remarkComp from "./RemarkComp.tsx"; // Importer StartRegComp
 
 function MainRegComp() {
     // State til at gemme start tid og km
     const [startTime, setStartTime] = useState<string>('');
     const [startKm, setStartKm] = useState<string>('');
     
-
+    const [endTime, setEndTime] = useState<string>('');
+    const [endKm, setEndKm] = useState<string>('');
+    
+    const [remark, setRemark] = useState<string>('');
+    
     // Håndtering af opdatering af start tid og km
     const handleStartTimeChange = (timeValue: string) => {
         setStartTime(timeValue);
@@ -15,17 +21,28 @@ function MainRegComp() {
     const handleStartKmChange = (kmValue: string) => {
         setStartKm(kmValue);
     };
+    
+    
+    const handleRemarkChange = (remarkValue: string) => {
+        setRemark(remarkValue);
+    }
 
   
 
     return (
         <div>
             <StartRegComp
+                titleStartTime={"Start tid"}
+                titleStartKm={"Start km"}
                 timeStart={startTime}
                 kmStart={startKm}
                 onTimeChange={handleStartTimeChange}
                 onKmChange={handleStartKmChange}
             />
+            
+            <RemarkComp title={"Bemærkning"}
+                        remark={remark}
+                        onChange={handleRemarkChange}/>/
             
 
             <div>
