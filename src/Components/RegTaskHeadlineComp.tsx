@@ -8,7 +8,7 @@ interface RegTaskHeadlineCompProps{
 const RegTaskHeadlineComp: React.FunctionComponent<RegTaskHeadlineCompProps> = ({ title, date })=>{
    
     return (
-        <div>
+        <div className='headline-container'>
             <h2>{title}</h2>
             <h3>{date}</h3>
         </div>

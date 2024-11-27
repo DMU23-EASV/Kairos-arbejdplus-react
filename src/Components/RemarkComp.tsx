@@ -32,6 +32,7 @@ const RemarkComp: React.FC<RemarkCompProps> = ({ title, value, onChange }) => {
             <TextField
                 id="outlined-multiline-static"
                 label={title}
+                sx={{ m: 1, width: '30ch' }}
                 multiline
                 rows={3}
                 value={inputValue}

@@ -5,6 +5,23 @@
   text-align: center;
 }
 
+.headline-container h2 {
+  margin-bottom: 4px;
+}
+
+.headline-container h3 {
+  margin-top: 0px;
+}
+
+.regMainComponent-container {
+  flex-direction: column;
+  justify-content: center;
+}
+
+.headline-container {
+  margin-top: 50px;
+}
+
 .timeIcon-button:focus{
   outline: none;
   box-shadow: none;
@@ -14,10 +31,11 @@
   display: flex;
   flex-direction: column;
   justify-content: space-between;
-  padding: 2rem;
+  padding: 1rem;
   border-radius: 8px;
   background: #d2cece;
   gap: 16px;
+  margin-top: 8px;
 }
 
 .regComponent-container {
@@ -25,9 +43,14 @@
   border-radius: 4px;
   
 }
+
 .padTop {
   padding-top: 8px;
   padding-bottom: 8px;
+}
+
+.buttons-wrapper {
+  margin-top: 10px;
 }
 
 .logo {

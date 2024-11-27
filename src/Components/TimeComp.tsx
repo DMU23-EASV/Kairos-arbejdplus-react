@@ -55,8 +55,9 @@ const TimeComp: React.FC<TimeCompProps> = ({ title, value, onChange }) => {
         <div className='regComponent-container'>
             <TextField className={'labels-taskRegistration'}
                 label={title}
+                size="small"
                 id="outlined-start-adornment"
-                sx={{ m: 1, width: '25ch' }}
+                sx={{ m: 2, width: '30ch' }}
                 value={inputValue}
                 onChange={handleInputChange}
                 error={error}
