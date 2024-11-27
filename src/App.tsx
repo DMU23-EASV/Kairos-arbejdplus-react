@@ -5,7 +5,7 @@ import BottomNavigationComp from "./Components/BottomNavigationComp.tsx";
 import TopNavigationComp from "./Components/TopNavigationComp.tsx";
 import LoginComp from "./Components/LoginComp.tsx";
 import React from "react";
-import StartRegComp from "./Components/StartRegComp.tsx";
+import MainRegComp from "./Components/MainRegComp.tsx";
 
 
 function App() {
@@ -29,7 +29,7 @@ const Main: React.FC = () => {
                     <Routes>
                         <Route path="/" element={<h1 style={{color: 'black'}}>Body Goes Here</h1>} />
                         <Route path="/tasks" element={
-                                <StartRegComp/>
+                                <MainRegComp/>
                         } />
                         <Route path="/history" element={<h1 style={{color: 'black'}}>History Page</h1>} />
                         <Route path="/notifications" element={<h1 style={{color: 'black'}}>Notifications Page</h1>} />

@@ -1,14 +1,20 @@
 import TextField from '@mui/material/TextField';
-import React, { useState } from 'react';
 import InputAdornment from "@mui/material/InputAdornment";
+import React, {useState} from "react";
 
+interface KmCompProps {
+    title: string;
+    value: string;
+    onChange: (value: string) => void;
+}
 
-function KmComp({ title }: { title: string }) {
+// KmComp is a functional component that uses the KmCompProps interface to define the props ({ title, value, onChange }).
+const KmComp: React.FC<KmCompProps> = ({ title, value, onChange }) => {
     
-    // State management for the input value and error status
-    // inputValue stores the current number input, updated via setInputValue (like a "setter").
+    // State management for the km input value and error status
+    // inputValue stores the current string input, updated via setInputValue (like a "setter").
     // error tracks if the input is invalid, toggled via setError.
-    const [inputValue, setInputValue] = useState<string>();
+    const [inputValue, setInputValue] = useState<string>(value);
     const [error, setError] = useState<boolean>(false);
 
     
@@ -25,9 +31,11 @@ function KmComp({ title }: { title: string }) {
         setInputValue(value);
         // sets error = true if input value isn't valid 
         setError(value != '' && !isValidKm(value));
-    };
 
-   
+        // updates parent component
+        onChange(value);
+    };
+    
 
     return (
         <div className='regComponent-container'>
