@@ -1,8 +1,7 @@
 import StartRegComp from './StartRegComp';
 import {useState} from "react";
-import RemarkComp from "./RemarkComp.tsx";
-import remarkComp from "./RemarkComp.tsx";
-import RegTaskHeadlineComp from "./RegTaskHeadlineComp.tsx"; // Importer StartRegComp
+import RegTaskHeadlineComp from "./RegTaskHeadlineComp.tsx";
+import EndRegComp from "./EndRegComp.tsx"; // Importer StartRegComp
 
 function MainRegComp() {
     // State til at gemme start tid og km
@@ -15,12 +14,20 @@ function MainRegComp() {
     const [remark, setRemark] = useState<string>('');
     
     // Håndtering af opdatering af start tid og km
-    const handleStartTimeChange = (timeValue: string) => {
-        setStartTime(timeValue);
+    const handleStartTimeChange = (timeStartValue: string) => {
+        setStartTime(timeStartValue);
     };
 
-    const handleStartKmChange = (kmValue: string) => {
-        setStartKm(kmValue);
+    const handleStartKmChange = (kmStartValue: string) => {
+        setStartKm(kmStartValue);
+    };
+
+    const handleEndTimeChange = (timeEndValue: string) => {
+        setEndTime(timeEndValue);
+    };
+
+    const handleEndKmChange = (kmEndValue: string) => {
+        setEndKm(kmEndValue);
     };
     
     
@@ -46,14 +53,23 @@ function MainRegComp() {
                 onKmChange={handleStartKmChange}
             />
             
-            <RemarkComp title={"Bemærkning"}
-                        remark={remark}
-                        onChange={handleRemarkChange}/>/
-            
+            <EndRegComp titleEndTime={"Slut tid"} 
+                        titleEndKm={"Slut km"} 
+                        titleRemark={"Bemærkning"} 
+                        timeEnd={endTime} 
+                        kmEnd={endKm} 
+                        remarkVal={remark} 
+                        onTimeChange={handleEndTimeChange} 
+                        onKmChange={handleEndKmChange} 
+                        onRemarkChange={handleRemarkChange}
+            />            
 
             <div>
                 <p>Start tid: {startTime}</p>
                 <p>Start km: {startKm}</p>
+                <p>Slut tid: {endTime}</p>
+                <p>Slut km: {endKm}</p>
+                <p>Bemærkning: {remark}</p>
             </div>
         </div>
     );

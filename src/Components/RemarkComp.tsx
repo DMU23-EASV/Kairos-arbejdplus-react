@@ -4,15 +4,15 @@ import React, {useState} from "react";
 
 interface RemarkCompProps {
     title: string;
-    remark: string;
+    value: string;
     onChange: (value: string) => void;
 }
 
 // RemarkComp is a functional component that uses the RemarkCompProps interface to define the props ({ title, remark, onChange }).
-const RemarkComp: React.FC<RemarkCompProps> = ({ title, remark, onChange }) => {
+const RemarkComp: React.FC<RemarkCompProps> = ({ title, value, onChange }) => {
 
     // State management for the remark input value
-    const [inputValue, setInputValue] = useState<string>(remark);
+    const [inputValue, setInputValue] = useState<string>(value);
     
 
     // Handles input changes
@@ -27,7 +27,8 @@ const RemarkComp: React.FC<RemarkCompProps> = ({ title, remark, onChange }) => {
 
 
     return (
-        <div className='regComponent-container'>
+        <div className='regComponent-container padTop'>
+            
             <TextField
                 id="outlined-multiline-static"
                 label={title}
