@@ -3,7 +3,10 @@ import {useState} from "react";
 import RegTaskHeadlineComp from "./RegTaskHeadlineComp.tsx";
 import EndRegComp from "./EndRegComp.tsx";
 import {Stack} from "@mui/material";
-import Button from "@mui/material/Button"; // Importer StartRegComp
+import Button from "@mui/material/Button";
+import {NEW_TASK_PAGE_TITLE} from "../Constants.ts";
+import {Link} from "react-router-dom";
+
 
 function MainRegComp() {
     
@@ -38,14 +41,43 @@ function MainRegComp() {
     const handleRemarkChange = (remarkValue: string) => {
         setRemark(remarkValue);
     }
+    
+    async function onSaveClick(){
+        try{
+            // placeholder API
+            console.log("Gemmer data...")
+            console.log(`Start tid: ${startTime}`)
+            console.log(`Start km: ${startKm}`)
+            
+        } catch (error){
+            console.error(error);
+        }
+    }
+    
+    async function onSendClick(){
+        
+        if (startTime == '' || startKm == '' || endTime == ''|| endKm == '' ) {
+            // placeholder notification to user
+            console.log("Du mangler at indtaste...")
+            
+        } else{
+            
+            try {
+                // placeholder API
+                console.log("Gemmer data...");
+                console.log("Data gemt");
 
-  
+            } catch (error) {
+                console.error(error);
+            }    
+        }
+    }
 
     return (
         <div className='regMainComponent-container mainComponent-wrapper'>
             <RegTaskHeadlineComp
-                title={"Ny tidsregistrering"}
-                date={"11. november 2024"}
+                title={NEW_TASK_PAGE_TITLE}
+                date={"11. november 2024"}                  
                 />
             
             <StartRegComp
@@ -71,27 +103,32 @@ function MainRegComp() {
             <Stack className='buttons-wrapper' spacing={2} direction="row">
                 <Button variant="contained"
                         size="small"
-                        sx={{ color: 'black', backgroundColor: 'lightgrey', '&:hover': { backgroundColor: 'darkgrey' } }}>
+                        sx={{ color: 'black', backgroundColor: 'lightgrey', '&:hover': { backgroundColor: 'darkgrey' } }}
+                        // changing view to '/history'
+                        component={Link}
+                        to="/history">
                         Annuller</Button>
                 
                 <Button variant="contained"
                         size="small"
-                        sx={{ color: 'black', backgroundColor: 'lightgrey', '&:hover': { backgroundColor: 'darkgrey' } }}>
+                        sx={{ color: 'black', backgroundColor: 'lightgrey', '&:hover': { backgroundColor: 'darkgrey' } }}
+                        onClick={async () => {
+                            await onSaveClick()
+                        }}
+                        component={Link}
+                        to="/history">
                         Gem som kladde</Button>
                 
                 <Button variant="contained"
                         size="small"
-                        sx={{ color: 'black', backgroundColor: 'lightgrey', '&:hover': { backgroundColor: 'darkgrey' } }}>
+                        sx={{ color: 'black', backgroundColor: 'lightgrey', '&:hover': { backgroundColor: 'darkgrey' } }}
+                        onClick={async () => {
+                            await onSendClick();
+                        }}
+                        component={Link}
+                        to="/history">
                         Send</Button>
             </Stack>
-
-            <div>
-                <p>Start tid: {startTime}</p>
-                <p>Start km: {startKm}</p>
-                <p>Slut tid: {endTime}</p>
-                <p>Slut km: {endKm}</p>
-                <p>Bemærkning: {remark}</p>
-            </div>
         </div>
     );
 }
