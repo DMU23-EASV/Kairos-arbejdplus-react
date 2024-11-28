@@ -1,5 +1,5 @@
 import StartRegComp from './StartRegComp';
-import {useState} from "react";
+import {useRef, useState} from "react";
 import RegTaskHeadlineComp from "./RegTaskHeadlineComp.tsx";
 import EndRegComp from "./EndRegComp.tsx";
 import {Stack} from "@mui/material";
@@ -9,6 +9,9 @@ import {Link} from "react-router-dom";
 
 
 function MainRegComp() {
+
+    // Reference to a hidden Link element for program navigation to "/history"
+    const linkRefHistory = useRef<HTMLAnchorElement>(null);
     
     // State management for registration properties
     const [startTime, setStartTime] = useState<string>('');
@@ -42,14 +45,29 @@ function MainRegComp() {
         setRemark(remarkValue);
     }
     
+    function onAnnullerClick(){
+        
+        // Navigates user to "/history" if linkRefHistory isn't null
+        if (linkRefHistory.current) {
+            linkRefHistory.current.click();
+        }
+    }
+    
     async function onSaveClick(){
         try{
             // placeholder API
+            // TODO finish here!
             console.log("Gemmer data...")
             console.log(`Start tid: ${startTime}`)
             console.log(`Start km: ${startKm}`)
+
+            // Navigates user to "/history" if linkRefHistory isn't null
+            if (linkRefHistory.current) {
+                linkRefHistory.current.click();
+            }
             
         } catch (error){
+            // TODO finish here!
             console.error(error);
         }
     }
@@ -58,16 +76,24 @@ function MainRegComp() {
         
         if (startTime == '' || startKm == '' || endTime == ''|| endKm == '' ) {
             // placeholder notification to user
+            // TODO finish here!
             console.log("Du mangler at indtaste...")
             
         } else{
             
             try {
                 // placeholder API
+                // TODO finish here
                 console.log("Gemmer data...");
                 console.log("Data gemt");
 
+                // Navigates user to "/history" if linkRefHistory isn't null
+                if (linkRefHistory.current) {
+                    linkRefHistory.current.click();
+                }
+                
             } catch (error) {
+                // TODO finish here!
                 console.error(error);
             }    
         }
@@ -105,29 +131,25 @@ function MainRegComp() {
                         size="small"
                         sx={{ color: 'black', backgroundColor: 'lightgrey', '&:hover': { backgroundColor: 'darkgrey' } }}
                         // changing view to '/history'
-                        component={Link}
-                        to="/history">
+                        onClick={onAnnullerClick}>
                         Annuller</Button>
-                
+
                 <Button variant="contained"
                         size="small"
                         sx={{ color: 'black', backgroundColor: 'lightgrey', '&:hover': { backgroundColor: 'darkgrey' } }}
                         onClick={async () => {
                             await onSaveClick()
-                        }}
-                        component={Link}
-                        to="/history">
+                        }}>
                         Gem som kladde</Button>
-                
+
                 <Button variant="contained"
                         size="small"
                         sx={{ color: 'black', backgroundColor: 'lightgrey', '&:hover': { backgroundColor: 'darkgrey' } }}
                         onClick={async () => {
                             await onSendClick();
-                        }}
-                        component={Link}
-                        to="/history">
+                        }}>
                         Send</Button>
+                        <Link to="/history" ref={linkRefHistory} style={{display: 'none'}}/> 
             </Stack>
         </div>
     );
