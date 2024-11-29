@@ -98,13 +98,23 @@ function MainRegComp() {
                 
                 let timeIsValid: boolean = validateTimeInputs(startTime, endTime);
                 if (timeIsValid) {
-                    
-                    try {
-                        // TODO: placeholder API
-                        console.log("tid gemt")
-                    } catch (error){
-                        
+                    if (validateKmInputs(startKm, endKm)) {
+                        try {
+                            // TODO: placeholder API
+                            console.log("tid gemt")
+                            changeViewToHistory()
+                        } catch (error){
+
+                        }   
                     }
+                    else {
+                        setErrorStartKm(true);
+                        setErrorEndKm(true);
+                    }
+                }
+                else {
+                    setErrorStartTime(true);
+                    setErrorEndTime(true);
                 }
                 
 
@@ -112,12 +122,11 @@ function MainRegComp() {
                 
                 let kmIsValid: boolean = validateKmInputs(startKm, endKm);
                 if (kmIsValid) {
-
                     try {
                         // TODO: placeholder API
                         console.log("km gemt")
+                        changeViewToHistory()
                     } catch (error){
-
                     }
                 }
             } 
@@ -127,12 +136,13 @@ function MainRegComp() {
                 try {
                     // TODO: Placeholder API
                     console.log("information gemt")
+                    changeViewToHistory()
                 } catch (error){
                     
                 }
             }
             
-            changeViewToHistory()
+            
         }
     }
     

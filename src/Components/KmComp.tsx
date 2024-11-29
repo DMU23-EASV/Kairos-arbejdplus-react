@@ -37,14 +37,17 @@ const KmComp: React.FC<KmCompProps> = ({ title, value, errorKm, onKmChange, onEr
         // updates input value
         setInputValue(value);
 
-        // isError = false if valid input and input != '' 
-        // and true if:
-        const isError = value == '' || !isValidKm(value);
-        setError(isError);
-
+        
+        if (isValidKm(value)) {
+            setError(false);
+        }
+        else if (!isValidKm(value)) {
+            setError(true);
+        }
+        
         // updates parent component
         onKmChange(value);
-        onErrorChange(isError);
+        onErrorChange(error);
     };
     
 
