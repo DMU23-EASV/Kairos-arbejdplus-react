@@ -2,10 +2,12 @@ import StartRegComp from './StartRegComp';
 import {useRef, useState} from "react";
 import RegTaskHeadlineComp from "./RegTaskHeadlineComp.tsx";
 import EndRegComp from "./EndRegComp.tsx";
-import {Stack} from "@mui/material";
 import Button from "@mui/material/Button";
 import {NEW_TASK_PAGE_TITLE} from "../Constants.ts";
 import {Link} from "react-router-dom";
+import {TimePeriodRules} from "../Services/ValidationRules/TimePeriodRules.ts";
+import {DistanceRules} from "../Services/ValidationRules/DistanceRules.ts";
+import { Stack } from '@mui/material';
 
 
 function MainRegComp() {
@@ -24,6 +26,7 @@ function MainRegComp() {
     const [errorEndTime, setErrorEndTime] = useState<boolean>(false);
     const [errorEndKm, setErrorEndKm] = useState<boolean>(false);
     
+    
     // Handles start time updates
     const handleStartTimeChange = (timeStartValue: string) => {
         setStartTime(timeStartValue);
@@ -32,7 +35,7 @@ function MainRegComp() {
     // Handles start time error updates
     const handleStartTimeErrorChange = (startTimeErrorState: boolean) => {
         setErrorStartTime(startTimeErrorState);
-    }
+    } 
 
     // Handles start km updates
     const handleStartKmChange = (kmStartValue: string) => {
@@ -78,214 +81,144 @@ function MainRegComp() {
     }
     
     
-    function onAnnullerClick(){
-     
-        changeViewToHistory();
-    }
+    // Change view to /history view
+    function onAnnullerClick(){ changeViewToHistory();  }
+    
     
     async function onSaveClick(){
-
-        if (errorStartTime || errorStartKm || errorEndTime || errorEndKm) {
-            handleErrorStates();
+        
+        let timePeriodIsValid:boolean = true;
+        let distanceIsValid:boolean = true;
+        
+        // Checks if all textboxes is empty
+        let allFieldsEmpty:boolean = isAllFieldsEmpty();
+        if (allFieldsEmpty) { 
+            console.log("Successfully change of view")
+            changeViewToHistory();
+            return;
         }
         
-        else if (startTime == '' || startKm == '' || endTime == ''|| endKm == '' ){
-            changeViewToHistory();
-            
-        } else {
+        
+        
+        
+            // Checks if any error in textboxes
+            let allFieldsWithoutErrors: boolean = isAllFieldsWithoutErrors();
+            if (allFieldsWithoutErrors) {
 
-            if (startTime != '' && endTime != '') {
-                
-                let timeIsValid: boolean = validateTimeInputs(startTime, endTime);
-                if (timeIsValid) {
-                    if (validateKmInputs(startKm, endKm)) {
-                        try {
-                            // TODO: placeholder API
-                            console.log("tid gemt")
-                            changeViewToHistory()
-                        } catch (error){
-
-                        }   
+                // Checks if both start time and start km
+                let twoTimeInput: boolean = isTwoTimeInputs();
+                if (twoTimeInput) {
+                    let isValid: boolean = TimePeriodRules.validateTimePeriod(startTime, endTime);
+                    if (!isValid) {
+                        timePeriodIsValid = false;
+                        setErrorStartTime(true);
+                        setErrorEndTime(true);
                     }
-                    else {
+                }
+
+                // Checks if both start km and end km
+                let twoKmInput: boolean = isTwoKmInputs();
+                if (twoKmInput) {
+                    let isValid: boolean = DistanceRules.validateDistance(startKm, endKm);
+                    if (!isValid) {
+                        distanceIsValid = false;
                         setErrorStartKm(true);
                         setErrorEndKm(true);
                     }
                 }
-                else {
-                    setErrorStartTime(true);
-                    setErrorEndTime(true);
-                }
-                
 
-            } else if (startKm != '' && endKm != '') {
-                
-                let kmIsValid: boolean = validateKmInputs(startKm, endKm);
-                if (kmIsValid) {
-                    try {
-                        // TODO: placeholder API
-                        console.log("km gemt")
-                        changeViewToHistory()
-                    } catch (error){
-                    }
-                }
-            } 
-            
-            else {
-                
-                try {
-                    // TODO: Placeholder API
-                    console.log("information gemt")
-                    changeViewToHistory()
-                } catch (error){
+                if (timePeriodIsValid && distanceIsValid) {
+
+                    // TODO: implement web IPA 
+                    console.log("Free to save!")
+                    changeViewToHistory();
                     
+                } else {
+                    // TODO: 
+                    console.log("Ret fejl")
                 }
-            }
-            
-            
+                
+            }  else {
+
+            notifyUser("Ret venligst fejlene")
+            return;    
         }
+            
     }
     
 
     async function onSendClick(){
+        
+        
+    }
+    
+    
+    
+    
+    
+    
 
-        if (startTime == '' || startKm == '' || endTime == ''|| endKm == '' ) {
+    
+    
+    function isAllFieldsEmpty(): boolean{
+        
+        let isAllEmpty:boolean;
+        
+        if (startTime == '' && startKm == '' && endTime == '' && endKm == '' && remark == ''){
+            isAllEmpty = true;
             
-            handleEmptyFields();
-
-        } else if (errorStartTime || errorStartKm || errorEndTime || errorEndKm) {
+        } else {
+            isAllEmpty = false;
+        }
+        
+        return isAllEmpty;
+    }
+    
+    function isAllFieldsWithoutErrors(): boolean{
+        
+        let isAllWithoutErrors:boolean;
+        
+        if (errorStartTime || errorStartKm || errorEndTime || errorEndKm){
+            isAllWithoutErrors = false;
+        } else {
+            isAllWithoutErrors = true;
+        }
+        
+        return isAllWithoutErrors;
+        
+    }
+    
+    function isTwoTimeInputs(): boolean{
+        
+        let twoTimeInput:boolean;
+        
+        if (startTime != '' && endTime != ''){
+            twoTimeInput = true;
             
-            handleErrorStates();
-            
-        }else {
-
-            let timeIsValid:boolean = validateTimeInputs(startTime, endTime);
-            let kmIsValid:boolean = validateKmInputs(startKm, endKm);
-            
-            if (timeIsValid && kmIsValid) {
-
-                try {
-                    // placeholder API
-                    // TODO finish here
-                    console.log("Gemmer data...");
-                    console.log("Data gemt");
-
-                    // Navigates user to "/history" if linkRefHistory isn't null
-                    if (linkRefHistory.current) {
-                        linkRefHistory.current.click();
-                    }
-
-                } catch (error) {
-                    // TODO finish here!
-                    console.error(error);
-                }
-                
-            } else{
-                // TODO: handel!
-
-                if (!timeIsValid && !kmIsValid) {
-                    setErrorStartTime(true);
-                    setErrorEndTime(true);
-                    setErrorStartKm(true);
-                    setErrorEndKm(true);
-                    
-                } else if (!timeIsValid) {
-                    setErrorStartTime(true);
-                    setErrorEndTime(true);
-                    
-                    notifyUser("Der er sket en fejl med indtastningen af tid");
-                    
-                } else if (!kmIsValid) {
-                    setErrorStartKm(true);
-                    setErrorEndKm(true);
-
-                    notifyUser("Der er sket en fejl med indtastningen af km");
-                }
-                
-            }
+        } else {
+            twoTimeInput = false;
         }
-    }
-    
-    
-
-    function validateTimeInputs(startTime:string , endTime:string): boolean {
-
-        let isValid:boolean = false;
         
-        // hour and minutes from start time
-        let hourStartTime:number = getHour(startTime);
-        let minutesStartTime:number = getMinutes(startTime);
-        // hours and minutes from end time
-        let hourEndTime:number = getHour(endTime);
-        let minutesEndTime:number = getMinutes(endTime);
-        
-        if (hourStartTime < hourEndTime) { isValid = true; }
-        if (hourStartTime > hourEndTime) { isValid = false; }
-        if (hourStartTime == hourEndTime && minutesStartTime < minutesEndTime) { isValid = true; }
-        if (hourStartTime == hourEndTime && minutesStartTime > minutesEndTime) { isValid = false; }
-        if (hourStartTime == hourEndTime && minutesStartTime == minutesEndTime) {isValid = false; }
-        
-        return isValid;
-    }
-    
-    
-    function getHour(time: string): number {
-        
-        let timeSplit = time.split(":");
-        return parseInt(timeSplit[0]);
+        return twoTimeInput;
     }
 
+    function isTwoKmInputs(): boolean{
 
-    function getMinutes(time: string): number {
+        let twoKmInput:boolean;
 
-        let timeSplit = time.split(":");
-        return parseInt(timeSplit[1]);
-    }
+        if (startKm != '' && endKm != ''){
+            twoKmInput = true;
 
-
-    function validateKmInputs(startKm: string, endKm: string) {
-        
-        let isValid:boolean = false;
-        
-        let kmStart:number = parseInt(startKm);
-        let kmEnd:number = parseInt(endKm);
-        
-        if (kmStart > kmEnd) { isValid = false; }
-        if (kmStart < kmEnd) { isValid = true; }
-        if (kmStart == kmEnd) { isValid = false; }
-        
-        return isValid;
-    }
-    
-    
-    function handleErrorStates(): void {
-        
-        if (errorStartTime) { notifyUser("Indtast rigtig start tid"); }
-        if (errorStartKm) { notifyUser("Indtast rigtig start km"); }
-        if (errorEndTime) { notifyUser("Indtast rigtig slut tid"); }
-        if (errorEndKm) { notifyUser("Indtast rigtig slut km"); }
-    }
-    
-    function handleEmptyFields(): void {
-
-        if (startTime == '') {
-            setErrorStartTime(true);
-            notifyUser("Start tid er påkrævet");
-        }
-        if (startKm == '') {
-            setErrorStartKm(true);
-            notifyUser("Start km er påkrævet");
-        }
-        if (endTime == '') {
-            setErrorEndTime(true);
-            notifyUser("Slut tid er påkrævet");
-        }
-        if (endKm == '') {
-            setErrorEndKm(true);
-            notifyUser("Slut km er påkrævet");
+        } else {
+            twoKmInput = false;
         }
 
+        return twoKmInput;
     }
+    
+   
+    
+    
     
     
     function notifyUser(message:string): void {

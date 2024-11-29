@@ -1,6 +1,7 @@
 import TextField from '@mui/material/TextField';
 import InputAdornment from "@mui/material/InputAdornment";
 import React, {useEffect, useState} from "react";
+import {KmRules} from "../Services/ValidationRules/KmRules.ts";
 
 interface KmCompProps {
     title: string;
@@ -25,30 +26,37 @@ const KmComp: React.FC<KmCompProps> = ({ title, value, errorKm, onKmChange, onEr
     }, [errorKm]);
     
     
-    // Validates km input from user using regex (only numbers)
-    const isValidKm = (value: string): boolean => {
-        const timeRegex = /^(?:[1-9][0-9]{0,5}|0|1000000)$/;
-        return timeRegex.test(value);
-    };
 
     // Handles input changes and validates dynamically
     const handleInputChange = (event: React.ChangeEvent<HTMLInputElement>) => {
         const value = event.target.value;
-        // updates input value
         setInputValue(value);
 
-        
-        if (isValidKm(value)) {
-            setError(false);
+        if (value == ''){
+            // updates parent component - with no error
+            onKmChange(value);
+            onErrorChange(false);
+            
+        } else {
+
+            // validates user input
+            let isValid: boolean = KmRules.validateKm(value); 
+               
+
+            if (isValid) {
+                // updates parent component - with no error
+                onKmChange(value);
+                onErrorChange(false);
+                
+            } else {
+                // updates parent component - with error
+                onKmChange(value);
+                onErrorChange(true);
+            }
         }
-        else if (!isValidKm(value)) {
-            setError(true);
-        }
-        
-        // updates parent component
-        onKmChange(value);
-        onErrorChange(error);
     };
+
+    
     
 
     return (
