@@ -1,5 +1,5 @@
 import StartRegComp from './StartRegComp';
-import {useRef, useState} from "react";
+import {useEffect, useRef, useState} from "react";
 import RegTaskHeadlineComp from "./RegTaskHeadlineComp.tsx";
 import EndRegComp from "./EndRegComp.tsx";
 import Button from "@mui/material/Button";
@@ -25,6 +25,22 @@ function MainRegComp() {
     const [errorStartKm, setErrorStartKm] = useState<boolean>(false);
     const [errorEndTime, setErrorEndTime] = useState<boolean>(false);
     const [errorEndKm, setErrorEndKm] = useState<boolean>(false);
+
+
+    useEffect(() => {
+        // Reager, når fejltilstandene opdateres
+        if (!errorStartTime && !errorEndTime) {
+            console.log("Data er valideret og klar til at blive gemt.");
+            // Her kan du kalde din gemme-logik eller anden handling
+        } else {
+            console.log("Fejl i start- eller sluttid, gemning stoppet.");
+        }
+    }, [errorStartTime, errorEndTime]);
+
+
+    useEffect(() => {
+        console.log(`after update error start km/end km: ${errorStartKm}, ${errorEndKm}`)
+    }, [errorStartKm, errorEndKm]);
     
     
     // Handles start time updates
@@ -87,65 +103,87 @@ function MainRegComp() {
     
     async function onSaveClick(){
         
-        let timePeriodIsValid:boolean = true;
-        let distanceIsValid:boolean = true;
-        
         // Checks if all textboxes is empty
         let allFieldsEmpty:boolean = isAllFieldsEmpty();
         if (allFieldsEmpty) { 
+            
+            console.log("All fields empty...")
             console.log("Successfully change of view")
+            
             changeViewToHistory();
             return;
-        }
-        
-        
-        
-        
+            
+        } else {
+
+            // Checks if both start time and end time is filled out 
+            let twoTimeInputs: boolean = isTwoTimeInputs();
+            if (twoTimeInputs) {
+                let isValid: boolean = TimePeriodRules.validateTimePeriod(startTime, endTime);
+                if (isValid) {
+                    console.log(`is valid - before: ${errorStartTime}, ${errorEndTime}`);
+                    setErrorStartTime(false);
+                    setErrorEndTime(false);
+                    console.log(`is not valid - after: ${errorStartTime}, ${errorEndTime}`);
+                } else {
+                    console.log(`is not valid - before: ${errorStartTime}, ${errorEndTime}`);
+                    setErrorStartTime(true);
+                    setErrorEndTime(true);
+                    console.log(`is not valid - after: ${errorStartTime}, ${errorEndTime}`);
+                }
+            }
+
+            // Checks if both start km and end km is filled out
+            let twoKmInputs: boolean = isTwoKmInputs();
+            if (twoKmInputs) {
+                let isValid: boolean = DistanceRules.validateDistance(startKm, endKm);
+                if (isValid) {
+                    setErrorStartKm(false);
+                    setErrorEndKm(false);
+                } else {
+                    setErrorStartKm(true);
+                    setErrorEndKm(true)
+                }
+            }
+
+
+            /*
             // Checks if any error in textboxes
             let allFieldsWithoutErrors: boolean = isAllFieldsWithoutErrors();
-            if (allFieldsWithoutErrors) {
+            if (!allFieldsWithoutErrors) {
 
-                // Checks if both start time and start km
-                let twoTimeInput: boolean = isTwoTimeInputs();
-                if (twoTimeInput) {
-                    let isValid: boolean = TimePeriodRules.validateTimePeriod(startTime, endTime);
-                    if (!isValid) {
-                        timePeriodIsValid = false;
-                        setErrorStartTime(true);
-                        setErrorEndTime(true);
-                    }
-                }
-
-                // Checks if both start km and end km
-                let twoKmInput: boolean = isTwoKmInputs();
-                if (twoKmInput) {
-                    let isValid: boolean = DistanceRules.validateDistance(startKm, endKm);
-                    if (!isValid) {
-                        distanceIsValid = false;
-                        setErrorStartKm(true);
-                        setErrorEndKm(true);
-                    }
-                }
-
-                if (timePeriodIsValid && distanceIsValid) {
-
-                    // TODO: implement web IPA 
-                    console.log("Free to save!")
-                    changeViewToHistory();
-                    
-                } else {
-                    // TODO: 
-                    console.log("Ret fejl")
-                }
+                // TODO: 
+                console.log("Ret fejl")
+                notifyUser("En eller flere fejl skal rettes")
+                return;
                 
-            }  else {
+            } else {
 
-            notifyUser("Ret venligst fejlene")
-            return;    
-        }
+                // TODO: implement web IPA 
+                console.log("Free to save!");
+
+                try {
+                    await saveToDatabase();
+                    console.log("Successfully change of view")
+                    changeViewToHistory();
+
+                } catch (error) {
+                    // TODO:
+                    console.log(error)
+                    notifyUser("Et eller andet gik galt, prøv igen...")
+                }
+            }
             
+             */
+        }
     }
     
+    
+    async function saveToDatabase() {
+        console.log("Saving to database...")
+        // simulation
+        await new Promise(resolve => setTimeout(resolve, 10000));
+        console.log("Data saved to database")
+    }
 
     async function onSendClick(){
         
@@ -275,9 +313,7 @@ function MainRegComp() {
                 <Button variant="contained"
                         size="small"
                         sx={{ color: 'black', backgroundColor: 'lightgrey', '&:hover': { backgroundColor: 'darkgrey' } }}
-                        onClick={async () => {
-                            await onSaveClick()
-                        }}>
+                        onClick={onSaveClick}>
                         Gem som kladde</Button>
 
                 <Button variant="contained"

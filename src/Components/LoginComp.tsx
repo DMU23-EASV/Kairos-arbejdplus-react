@@ -32,7 +32,6 @@ export default function LoginComp({ onLogin }: LoginCompProps) {
                     style={{marginBottom: 10}}
                     id="outlined-required"
                     label="Brugernavn"
-                    defaultValue=""
                     color="primary"
                     value={username}
                 />
