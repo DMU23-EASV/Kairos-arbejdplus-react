@@ -1,7 +1,7 @@
 import TextField from '@mui/material/TextField';
 import Button from '@mui/material/Button';
 import {APP_NAME, LOGIN_ENDPOINT} from "../Constants.ts";
-import {Link} from "react-router-dom";
+import {useNavigate} from "react-router-dom";
 import './LoginComp.css'
 import {useState} from "react";
 
@@ -13,6 +13,8 @@ export default function LoginComp({ onLogin }: LoginCompProps) {
     
     const [username, setUsername] = useState<string>("");
     const [password, setPassword] = useState<string>("");
+    
+    const navigate = useNavigate();
     
     const handleLogin = async () => {
         try {
@@ -32,17 +34,17 @@ export default function LoginComp({ onLogin }: LoginCompProps) {
                 alert('Unauthorized: Invalid username or password.');
                 return;
             }
-            console.log("After 401")
-            if (response.status === 200) {
+            
+            if (!response.ok) {
                 const errorMessage = await response.text();
                 alert(`Error: ${errorMessage || 'Something went wrong'}`);
                 return;
             }
-            console.log("After ok")
-            const result = await response.text();
-            alert(result);
-
-            onLogin(username, password); 
+            
+            onLogin(username, password);
+            
+            navigate("/tasks");
+            
         } catch (error) {
             console.error('Error during login:', error);
             alert('Unable to connect to the server. Please try again later.');
@@ -86,8 +88,6 @@ export default function LoginComp({ onLogin }: LoginCompProps) {
                 <Button
                     variant="contained"
                     onClick={handleLogin}
-                    component={Link}
-                    to="/tasks"
                 >
                     Login
                 </Button>
