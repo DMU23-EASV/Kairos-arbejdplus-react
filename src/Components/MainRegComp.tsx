@@ -9,6 +9,8 @@ import {Link} from "react-router-dom";
 import { Stack } from '@mui/material';
 import {TimeRules} from "../Services/ValidationRules/TimeRules.ts";
 import {KmRules} from "../Services/ValidationRules/KmRules.ts";
+import {TimePeriodRules} from "../Services/ValidationRules/TimePeriodRules.ts";
+import {DistanceRules} from "../Services/ValidationRules/DistanceRules.ts";
 
 
 interface TaskData {
@@ -19,11 +21,22 @@ interface TaskData {
     remark: string;
 }
 
+interface TaskErrors{
+    [key:string]: string | undefined;
+}
 
 function MainRegComp() {
 
     // Reference to a hidden Link element for program navigation to "/history"
     const linkRefHistory = useRef<HTMLAnchorElement>(null);
+
+    function changeViewToHistory(): void {
+        // Navigates user to "/history" if linkRefHistory isn't null
+        if (linkRefHistory.current) {
+            linkRefHistory.current.click();
+        }
+    }
+    
 
     // Object state for task details: start time, start km, end time, end km and remarks.
     const [taskData, setTaskData] = useState<TaskData>({
@@ -35,182 +48,197 @@ function MainRegComp() {
     });
 
     // State to manage an array of error objects.
-    const [errors, setErrors] = useState<Error[]>([]);
-    
-    
-    const validationSchema = Yup.object({
-        startTime: Yup.string().matches(TimeRules.timeRegex),
-        startKm: Yup.string().matches(KmRules.kmRegex),
-        endTime: Yup.string().matches(TimeRules.timeRegex),
-        endKm: Yup.string().matches(KmRules.kmRegex),
-        remark: Yup.string(),
-    });
-    
-    
-    /*
-    // State management for registration properties
-    const [startTime, setStartTime] = useState<string>('');
-    const [startKm, setStartKm] = useState<string>('');
-    const [endTime, setEndTime] = useState<string>('');
-    const [endKm, setEndKm] = useState<string>('');
-    const [remark, setRemark] = useState<string>('');
-    const [errorStartTime, setErrorStartTime] = useState<boolean>(false);
-    const [errorStartKm, setErrorStartKm] = useState<boolean>(false);
-    const [errorEndTime, setErrorEndTime] = useState<boolean>(false);
-    const [errorEndKm, setErrorEndKm] = useState<boolean>(false);
+    const [errors, setErrors] = useState<TaskErrors>({});
 
 
-    useEffect(() => {
-        // Reager, når fejltilstandene opdateres
-        if (!errorStartTime && !errorEndTime) {
-            console.log("Data er valideret og klar til at blive gemt.");
-            // Her kan du kalde din gemme-logik eller anden handling
-        } else {
-            console.log("Fejl i start- eller sluttid, gemning stoppet.");
-        }
-    }, [errorStartTime, errorEndTime]);
-
-
-    useEffect(() => {
-        console.log(`after update error start km/end km: ${errorStartKm}, ${errorEndKm}`)
-    }, [errorStartKm, errorEndKm]);
-    
-    
-    // Handles start time updates
-    const handleStartTimeChange = (timeStartValue: string) => {
-        setStartTime(timeStartValue);
-    };
-    
-    // Handles start time error updates
-    const handleStartTimeErrorChange = (startTimeErrorState: boolean) => {
-        setErrorStartTime(startTimeErrorState);
-    } 
-
-    // Handles start km updates
-    const handleStartKmChange = (kmStartValue: string) => {
-        setStartKm(kmStartValue);
-    };
-
-    // Handles start km error updates
-    const handleStartKmErrorChange = (startKmErrorState: boolean) => {
-        setErrorStartKm(startKmErrorState);
-    }
-
-    // Handles end time updates
-    const handleEndTimeChange = (timeEndValue: string) => {
-        setEndTime(timeEndValue);
-    };
-
-    // Handles end time error updates
-    const handleEndTimeErrorChange = (endTimeErrorState: boolean) => {
-        setErrorEndTime(endTimeErrorState);
-    }
-
-    // Handles end km updates
-    const handleEndKmChange = (kmEndValue: string) => {
-        setEndKm(kmEndValue);
-    };
-
-    // Handles end km error updates
-    const handleEndKmErrorChange = (endKmErrorState: boolean) => {
-        setErrorEndKm(endKmErrorState);
-    }
-    
-    // Handles remark updates
-    const handleRemarkChange = (remarkValue: string) => {
-        setRemark(remarkValue);
-    }
-    
-    
-    function changeViewToHistory(): void {
-        // Navigates user to "/history" if linkRefHistory isn't null
-        if (linkRefHistory.current) {
-            linkRefHistory.current.click();
-        }
-    }
-    
-    
-    // Change view to /history view
-    function onAnnullerClick(){ changeViewToHistory();  }
-    
-    
-    async function onSaveClick(){
+    const validationSchemaSave = Yup.object({
+        startTime: Yup.string().matches(TimeRules.timeRegex, "Start time must be in HH:mm format")
+            .nullable()
+            .transform((curr, orig) => orig === "" ? null : curr)  
+            .notRequired(),
+        startKm: Yup.string().matches(KmRules.kmRegex, "Invalid km format")
+            .nullable()
+            .transform((curr, orig) => orig === "" ? null : curr)  
+            .notRequired(),
+        endTime: Yup.string().matches(TimeRules.timeRegex, "End time must be in HH:mm format")
+            .nullable()
+            .transform((curr, orig) => orig === "" ? null : curr)  
+            .notRequired(),
+        endKm: Yup.string().matches(KmRules.kmRegex, "Invalid km format")
+            .nullable()
+            .transform((curr, orig) => orig === "" ? null : curr)  
+            .notRequired(),
+        remark: Yup.string().nullable()
+            .transform((curr, orig) => orig === "" ? null : curr)  
+            .notRequired(),
         
-        // Checks if all textboxes is empty
-        let allFieldsEmpty:boolean = isAllFieldsEmpty();
-        if (allFieldsEmpty) { 
-            
-            console.log("All fields empty...")
-            console.log("Successfully change of view")
-            
-            changeViewToHistory();
-            return;
-            
-        } else {
-
-            // Checks if both start time and end time is filled out 
-            let twoTimeInputs: boolean = isTwoTimeInputs();
-            if (twoTimeInputs) {
-                let isValid: boolean = TimePeriodRules.validateTimePeriod(startTime, endTime);
-                if (isValid) {
-                    console.log(`is valid - before: ${errorStartTime}, ${errorEndTime}`);
-                    setErrorStartTime(false);
-                    setErrorEndTime(false);
-                    console.log(`is not valid - after: ${errorStartTime}, ${errorEndTime}`);
-                } else {
-                    console.log(`is not valid - before: ${errorStartTime}, ${errorEndTime}`);
-                    setErrorStartTime(true);
-                    setErrorEndTime(true);
-                    console.log(`is not valid - after: ${errorStartTime}, ${errorEndTime}`);
-                }
-            }
-
-            // Checks if both start km and end km is filled out
-            let twoKmInputs: boolean = isTwoKmInputs();
-            if (twoKmInputs) {
-                let isValid: boolean = DistanceRules.validateDistance(startKm, endKm);
-                if (isValid) {
-                    setErrorStartKm(false);
-                    setErrorEndKm(false);
-                } else {
-                    setErrorStartKm(true);
-                    setErrorEndKm(true)
-                }
-            }
-
-
-            
-            // Checks if any error in textboxes
-            let allFieldsWithoutErrors: boolean = isAllFieldsWithoutErrors();
-            if (!allFieldsWithoutErrors) {
-
-                // TODO: 
-                console.log("Ret fejl")
-                notifyUser("En eller flere fejl skal rettes")
-                return;
+        timePeriodValid: Yup.mixed().test(
+            "timePeriod", "Start tid skal være før sluttid",
+            function (value) {
+                const { startTime, endTime } = this.parent;
                 
-            } else {
-
-                // TODO: implement web IPA 
-                console.log("Free to save!");
-
-                try {
-                    await saveToDatabase();
-                    console.log("Successfully change of view")
-                    changeViewToHistory();
-
-                } catch (error) {
-                    // TODO:
-                    console.log(error)
-                    notifyUser("Et eller andet gik galt, prøv igen...")
+                if (startTime && endTime) {
+                    const isValid = TimePeriodRules.validateTimePeriod(startTime, endTime);
+                    if (startTime && endTime && !isValid) {
+                        return this.createError({message: "Starttid skal være før sluttid"});
+                    }
                 }
+                return true;
+            }
+        ),
+        kmDistanceValid: Yup.mixed().test(
+            "distance", "Start km skal være mindre end slut km",
+            function () {
+                const { startKm, endKm } = this.parent;
+                
+                if (startKm && endKm) {
+                    const isValid = DistanceRules.validateDistance(startKm, endKm);
+                    if (startKm && endKm && !isValid) {
+                        return this.createError({message: "Start km skal være mindre end slut km"});
+                    }
+                }
+                return true;
+            }
+        ),
+    });
+
+    const validationSchemaSend = Yup.object({
+        startTime: Yup.string().matches(TimeRules.timeRegex).required("Start tid er påkrævet"),
+        startKm: Yup.string().matches(KmRules.kmRegex).required("Start km er påkrævet"),
+        endTime: Yup.string().matches(TimeRules.timeRegex).required("Slut tid er påkrævet"),
+        endKm: Yup.string().matches(KmRules.kmRegex).required("Slut km er påkrævet"),
+        remark: Yup.string().nullable().notRequired(),
+        timePeriodValid: Yup.mixed().test(
+            "timePeriod", "Start tid skal være før sluttid",
+            function (value) {
+                const { startTime, endTime } = this.parent;
+                const isValid = TimePeriodRules.validateTimePeriod(startTime, endTime);
+                if (startTime && endTime && !isValid) {
+                    return this.createError({ message: "Starttid skal være før sluttid" });
+                }
+                return true;
+            }
+        ),
+        kmDistanceValid: Yup.mixed().test(
+            "distance", "Start km skal være mindre end slut km",
+            function (value) {
+                const { startKm, endKm } = this.parent;
+                const isValid = DistanceRules.validateDistance(startKm, endKm);
+                if (startKm && endKm && !isValid) {
+                    return this.createError({ message: "Start km skal være mindre end slut km" });
+                }
+                return true;
+            }
+        ),
+    });
+
+
+
+    const validateTaskData = async (isSend: boolean) => {
+        const schema = isSend ? validationSchemaSend : validationSchemaSave;
+
+        try {
+            await schema.validate(taskData, { abortEarly: false });
+            setErrors({});
+            return true;
+        } catch (error) {
+            if (error instanceof Yup.ValidationError) {
+                const validationError: TaskErrors = {};
+                error.inner.forEach((err) => {
+                    validationError[err.path as string] = err.message;
+                });
+                setErrors(validationError);
+            }
+            return false;
+        }
+    };
+
+
+    const handleFieldChange = (field: keyof TaskData, value: string) => {
+        const trimmedValue = value.trim() || "";
+
+        // Update the task data state with the new value for the field
+        setTaskData((prevData) => ({ ...prevData, [field]: trimmedValue }));
+
+        if (trimmedValue === ""){
+            setErrors((prevErrors) => {
+                const {[field]: _, ...restErrors } = prevErrors;
+                return restErrors;
+            });
+            return;
+        }
+        
+        // Validate startKm and endKm for numeric format
+        if (field === "startKm" || field === "endKm") {
+            const isValid = KmRules.kmRegex.test(trimmedValue);
+            if (!isValid) {
+                setErrors((prevErrors) => ({
+                    ...prevErrors,
+                    [field]: "Ugyldigt km format",
+                }));
+            } else {
+                setErrors((prevErrors) => {
+                    const { [field]: _, ...restErrors } = prevErrors;
+                    return restErrors;
+                });
+            }
+        }
+
+        // Validate startTime and endTime for correct time format
+        if (field === "startTime" || field === "endTime") {
+            
+            const isValidTime = TimeRules.timeRegex.test(trimmedValue);
+            
+            if (!isValidTime) {
+                setErrors((prevErrors) => ({
+                    ...prevErrors,
+                    [field]: "Ugyldigt tidsformat (hh:mm)",
+                }));
+            } else {
+                setErrors((prevErrors) => {
+                    const { [field]: _, ...restErrors } = prevErrors;
+                    return restErrors;
+                });
             }
             
-             
+            
         }
+    };
+    
+    
+    
+    const handleAnnullerClick = () => {
+    
+        console.log("Annuller...")
+        changeViewToHistory();
     }
     
     
+    
+    const handleSaveClick = async () => {
+        const isValid = await validateTaskData(false);
+        
+        if (isValid) {
+            console.log("Valid indtastning. Gemmer som kladde...")
+            // TODO: save to db
+            changeViewToHistory();
+            
+        } else {
+            console.log("Fejl i indtastning. Kan ikke gemme...")
+        }
+    };
+
+    const handleSendClick = async () => {
+        const isValid = await validateTaskData(true); // For Send
+        if (isValid) {
+            console.log("Send indtastning...");
+            // TODO: send data
+        } else {
+            console.log("Fejl i indtastning. Kan ikke sende...");
+        }    };
+           
+    /*
+            
     async function saveToDatabase() {
         console.log("Saving to database...")
         // simulation
@@ -222,73 +250,7 @@ function MainRegComp() {
         
         
     }
-    
-    
-    
-    
-    
-    
-
-    
-    
-    function isAllFieldsEmpty(): boolean{
-        
-        let isAllEmpty:boolean;
-        
-        if (startTime == '' && startKm == '' && endTime == '' && endKm == '' && remark == ''){
-            isAllEmpty = true;
-            
-        } else {
-            isAllEmpty = false;
-        }
-        
-        return isAllEmpty;
-    }
-    
-    function isAllFieldsWithoutErrors(): boolean{
-        
-        let isAllWithoutErrors:boolean;
-        
-        if (errorStartTime || errorStartKm || errorEndTime || errorEndKm){
-            isAllWithoutErrors = false;
-        } else {
-            isAllWithoutErrors = true;
-        }
-        
-        return isAllWithoutErrors;
-        
-    }
-    
-    function isTwoTimeInputs(): boolean{
-        
-        let twoTimeInput:boolean;
-        
-        if (startTime != '' && endTime != ''){
-            twoTimeInput = true;
-            
-        } else {
-            twoTimeInput = false;
-        }
-        
-        return twoTimeInput;
-    }
-
-    function isTwoKmInputs(): boolean{
-
-        let twoKmInput:boolean;
-
-        if (startKm != '' && endKm != ''){
-            twoKmInput = true;
-
-        } else {
-            twoKmInput = false;
-        }
-
-        return twoKmInput;
-    }
-    
-   
-    
+    */
     
     
     
@@ -299,7 +261,6 @@ function MainRegComp() {
     }
     
     
-*/
     return (
         <div className='regMainComponent-container mainComponent-wrapper'>
             <RegTaskHeadlineComp
@@ -310,29 +271,27 @@ function MainRegComp() {
             <StartRegComp
                 titleStartTime={"Start tid"}
                 titleStartKm={"Start km"}
-                timeStart={startTime}
-                kmStart={startKm}
-                errorTime={errorStartTime}
-                errorKm={errorStartKm}
-                onTimeChange={handleStartTimeChange}
-                onKmChange={handleStartKmChange}
-                onStartTimeErrorChange={handleStartTimeErrorChange}
-                onStartKmErrorChange={handleStartKmErrorChange}
+                timeStart={taskData.startTime}
+                kmStart={taskData.startKm}
+                errorTime={!!errors.startTime}
+                errorKm={!!errors.startKm}
+                onTimeChange={(value) => handleFieldChange('startTime', value)}
+                onKmChange={(value) => handleFieldChange('startKm', value)}
+                
             />
             
             <EndRegComp titleEndTime={"Slut tid"} 
                         titleEndKm={"Slut km"} 
                         titleRemark={"Bemærkning"} 
-                        timeEnd={endTime} 
-                        kmEnd={endKm} 
-                        remarkVal={remark} 
-                        errorTime={errorEndTime}
-                        errorKm={errorEndKm}
-                        onTimeChange={handleEndTimeChange} 
-                        onKmChange={handleEndKmChange} 
-                        onRemarkChange={handleRemarkChange}
-                        onEndTimeErrorChange={handleEndTimeErrorChange}
-                        onEndKmErrorChange={handleEndKmErrorChange}
+                        timeEnd={taskData.endTime} 
+                        kmEnd={taskData.endKm} 
+                        remarkVal={taskData.remark} 
+                        errorTime={!!errors.endTime}
+                        errorKm={!!errors.endKm}
+                        onTimeChange={(value) => handleFieldChange('endTime', value)} 
+                        onKmChange={(value) => handleFieldChange('endKm', value)} 
+                        onRemarkChange={(value) => handleFieldChange('remark', value)}
+                       
             />
 
             <Stack className='buttons-wrapper' spacing={2} direction="row">
@@ -340,21 +299,19 @@ function MainRegComp() {
                         size="small"
                         sx={{ color: 'black', backgroundColor: 'lightgrey', '&:hover': { backgroundColor: 'darkgrey' } }}
                         // changing view to '/history'
-                        onClick={onAnnullerClick}>
+                        onClick={handleAnnullerClick}>
                         Annuller</Button>
 
                 <Button variant="contained"
                         size="small"
                         sx={{ color: 'black', backgroundColor: 'lightgrey', '&:hover': { backgroundColor: 'darkgrey' } }}
-                        onClick={onSaveClick}>
+                        onClick={handleSaveClick}>
                         Gem som kladde</Button>
 
                 <Button variant="contained"
                         size="small"
                         sx={{ color: 'black', backgroundColor: 'lightgrey', '&:hover': { backgroundColor: 'darkgrey' } }}
-                        onClick={async () => {
-                            await onSendClick();
-                        }}>
+                        onClick={handleSendClick}>
                         Send</Button>
                         <Link to="/history" ref={linkRefHistory} style={{display: 'none'}}/> 
             </Stack>
