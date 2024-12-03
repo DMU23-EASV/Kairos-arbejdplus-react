@@ -21,15 +21,19 @@ export default function LoginComp({ onLogin }: LoginCompProps) {
                 headers: {
                     "Content-Type": "application/json", 
                 },
-                body: JSON.stringify({username, password}),
+                body: JSON.stringify({
+                        username: username,
+                        password: password
+            }),
             });
             console.log("After fetch")
+            
             if (response.status === 401) {
                 alert('Unauthorized: Invalid username or password.');
                 return;
             }
             console.log("After 401")
-            if (!response.ok) {
+            if (response.status === 200) {
                 const errorMessage = await response.text();
                 alert(`Error: ${errorMessage || 'Something went wrong'}`);
                 return;
