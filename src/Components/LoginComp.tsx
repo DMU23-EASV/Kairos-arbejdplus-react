@@ -1,6 +1,6 @@
 import TextField from '@mui/material/TextField';
 import Button from '@mui/material/Button';
-import {APP_NAME} from "../Constants.ts";
+import {APP_NAME, LOGIN_ENDPOINT} from "../Constants.ts";
 import {Link} from "react-router-dom";
 import './LoginComp.css'
 import {useState} from "react";
@@ -14,8 +14,36 @@ export default function LoginComp({ onLogin }: LoginCompProps) {
     const [username, setUsername] = useState<string>("");
     const [password, setPassword] = useState<string>("");
     
-    const handleLogin = () => {
-        onLogin(username, password); // Needs to be changed to some form of login validation call
+    const handleLogin = async () => {
+        try {
+            const response = await fetch(LOGIN_ENDPOINT, {
+                method: "POST",
+                headers: {
+                    "Content-Type": "application/json", 
+                },
+                body: JSON.stringify({username, password}),
+            });
+            console.log("After fetch")
+            if (response.status === 401) {
+                alert('Unauthorized: Invalid username or password.');
+                return;
+            }
+            console.log("After 401")
+            if (!response.ok) {
+                const errorMessage = await response.text();
+                alert(`Error: ${errorMessage || 'Something went wrong'}`);
+                return;
+            }
+            console.log("After ok")
+            const result = await response.text();
+            alert(result);
+
+            onLogin(username, password); 
+        } catch (error) {
+            console.error('Error during login:', error);
+            alert('Unable to connect to the server. Please try again later.');
+        }
+        
     }
     
     return (
