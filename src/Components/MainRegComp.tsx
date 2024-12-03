@@ -1,20 +1,53 @@
 import StartRegComp from './StartRegComp';
+import * as Yup from 'yup';
 import {useEffect, useRef, useState} from "react";
 import RegTaskHeadlineComp from "./RegTaskHeadlineComp.tsx";
 import EndRegComp from "./EndRegComp.tsx";
 import Button from "@mui/material/Button";
 import {NEW_TASK_PAGE_TITLE} from "../Constants.ts";
 import {Link} from "react-router-dom";
-import {TimePeriodRules} from "../Services/ValidationRules/TimePeriodRules.ts";
-import {DistanceRules} from "../Services/ValidationRules/DistanceRules.ts";
 import { Stack } from '@mui/material';
+import {TimeRules} from "../Services/ValidationRules/TimeRules.ts";
+import {KmRules} from "../Services/ValidationRules/KmRules.ts";
+
+
+interface TaskData {
+    startTime: string;
+    startKm: string;
+    endTime: string;
+    endKm: string;
+    remark: string;
+}
 
 
 function MainRegComp() {
 
     // Reference to a hidden Link element for program navigation to "/history"
     const linkRefHistory = useRef<HTMLAnchorElement>(null);
+
+    // Object state for task details: start time, start km, end time, end km and remarks.
+    const [taskData, setTaskData] = useState<TaskData>({
+        startTime: "",
+        startKm: "",
+        endTime: "",
+        endKm: "",
+        remark: "",
+    });
+
+    // State to manage an array of error objects.
+    const [errors, setErrors] = useState<Error[]>([]);
     
+    
+    const validationSchema = Yup.object({
+        startTime: Yup.string().matches(TimeRules.timeRegex),
+        startKm: Yup.string().matches(KmRules.kmRegex),
+        endTime: Yup.string().matches(TimeRules.timeRegex),
+        endKm: Yup.string().matches(KmRules.kmRegex),
+        remark: Yup.string(),
+    });
+    
+    
+    /*
     // State management for registration properties
     const [startTime, setStartTime] = useState<string>('');
     const [startKm, setStartKm] = useState<string>('');
@@ -146,7 +179,7 @@ function MainRegComp() {
             }
 
 
-            /*
+            
             // Checks if any error in textboxes
             let allFieldsWithoutErrors: boolean = isAllFieldsWithoutErrors();
             if (!allFieldsWithoutErrors) {
@@ -173,7 +206,7 @@ function MainRegComp() {
                 }
             }
             
-             */
+             
         }
     }
     
@@ -266,7 +299,7 @@ function MainRegComp() {
     }
     
     
-
+*/
     return (
         <div className='regMainComponent-container mainComponent-wrapper'>
             <RegTaskHeadlineComp
