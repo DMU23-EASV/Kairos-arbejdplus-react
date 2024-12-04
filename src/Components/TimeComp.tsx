@@ -8,13 +8,13 @@ import AccessTimeSharpIcon from '@mui/icons-material/AccessTimeSharp';
 interface TimeCompProps {
     title: string;
     value: string;
-    error?: boolean;
+    errorMessage?: string;
     onTimeChange: (value: string) => void;
 }
 
 
 // TimeComp is a functional component that uses the TimeCompProps interface to define the props ({ title, value, onChange }).
-const TimeComp: React.FC<TimeCompProps> = ({ title, value, error, onTimeChange }) => {
+const TimeComp: React.FC<TimeCompProps> = ({ title, value, errorMessage, onTimeChange }) => {
     const [inputValue, setInputValue] = useState<string>(value);
     
     // Get current time
@@ -50,9 +50,9 @@ const TimeComp: React.FC<TimeCompProps> = ({ title, value, error, onTimeChange }
                        sx={{ m: 2, width: '30ch' }}
                        value={inputValue}
                        onChange={handleChange}
-                       error={!!error}
+                       error={!!errorMessage}
                         // text if error : text if no error
-                       helperText={error ? 'Indtast gyldigt tidspunkt (hh:mm)' : ''}
+                       helperText={errorMessage || ''}
                        InputProps={{
                            startAdornment: <InputAdornment position="start" />,
                            endAdornment: (

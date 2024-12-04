@@ -42,7 +42,7 @@ function MainRegComp() {
 
     // Reference to a hidden Link element for program navigation to "/history"
     const linkRefHistory = useRef<HTMLAnchorElement>(null);
-
+    
     function changeViewToHistory(): void {
         // Navigates user to "/history" if linkRefHistory isn't null
         if (linkRefHistory.current) {
@@ -51,7 +51,7 @@ function MainRegComp() {
     }
     
 
-    // Object state for task details: start time, start km, end time, end km and remarks.
+    // State holding an object with task details: start time, start km, end time, end km, and remark
     const [taskData, setTaskData] = useState<TaskData>({
         startTime: "",
         startKm: "",
@@ -60,32 +60,70 @@ function MainRegComp() {
         remark: "",
     });
 
-    // State to manage an array of error objects.
+
+    // State for validation errors with field names as keys and messages as values
     const [errors, setErrors] = useState<TaskErrors>({});
 
 
     const validationSchemaSave = Yup.object({
-        startTime: Yup.string().matches(TimeRules.timeRegex, "Start time must be in HH:mm format")
-            .nullable().transform((curr, orig) => orig === "" ? null : curr).notRequired(),
-        startKm: Yup.string().matches(KmRules.kmRegex, "Invalid km format")
-            .nullable().transform((curr, orig) => orig === "" ? null : curr).notRequired(),
-        endTime: Yup.string().matches(TimeRules.timeRegex, "End time must be in HH:mm format")
-            .nullable().transform((curr, orig) => orig === "" ? null : curr).notRequired(),
-        endKm: Yup.string().matches(KmRules.kmRegex, "Invalid km format")
-            .nullable().transform((curr, orig) => orig === "" ? null : curr).notRequired(),
-        remark: Yup.string().nullable().transform((curr, orig) => orig === "" ? null : curr).notRequired(),
+        startTime: Yup.string().matches(TimeRules.timeRegex, "Starttid skal være hh:mm format").nullable()
+            .transform(function (curr, orig) {
+                if (orig === "") {
+                    return null;
+                } else {
+                    return curr;
+                }
+            }).notRequired(),
+        
+        startKm: Yup.string().matches(KmRules.kmRegex, "Ikke korrekt km format").nullable()
+            .transform(function (curr, orig) {
+                if (orig === "") {
+                    return null;
+                } else {
+                    return curr;
+                }
+            }).notRequired(),
+        
+        endTime: Yup.string().matches(TimeRules.timeRegex, "Sluttid skal være hh:mm format").nullable()
+            .transform(function (curr, orig) {
+                if (orig === "") {
+                    return null;
+                } else {
+                    return curr;
+                }
+            }).notRequired(),
+        
+        endKm: Yup.string().matches(KmRules.kmRegex, "Ikke korrekt km format").nullable()
+            .transform(function (curr, orig) {
+                if (orig === "") {
+                    return null;
+                } else {
+                    return curr;
+                }
+            }).notRequired(),
+        
+        remark: Yup.string().nullable()
+            .transform(function (curr, orig) {
+                if (orig === "") {
+                    return null;
+                } else {
+                    return curr;
+                }
+            }).notRequired(),
         
         timePeriodValid: Yup.mixed().test(
-            "timePeriod", "Start tid skal være før sluttid",
-            function (value) {
+            "timePeriod", 
+            "Starttid skal være før sluttid",
+            function () {
                 const { startTime, endTime } = this.parent;
                 
-                if (startTime && endTime) {
-                    const isValid = TimePeriodRules.validateTimePeriod(startTime, endTime);
-                    if (startTime && endTime && !isValid) {
-                        return this.createError({message: "Starttid skal være før sluttid"});
-                    }
+                // Checks if both start time and end time are defined and if time period is valid.
+                // if invalid time period (end time before start time) return an error
+                if (startTime && endTime && !TimePeriodRules.validateTimePeriod(startTime, endTime)) {
+                    return this.createError({ message: "Starttid skal være før sluttid" });
                 }
+                
+                // if no validation error, return true to indicate passed validation 
                 return true;
             }
         ),
@@ -93,13 +131,14 @@ function MainRegComp() {
             "distance", "Start km skal være mindre end slut km",
             function () {
                 const { startKm, endKm } = this.parent;
-                
-                if (startKm && endKm) {
-                    const isValid = DistanceRules.validateDistance(startKm, endKm);
-                    if (startKm && endKm && !isValid) {
-                        return this.createError({message: "Start km skal være mindre end slut km"});
-                    }
+
+                // Checks if both start km and end km are defined and if km distance is valid.
+                // if invalid distance (end km before start km) return an error
+                if (startKm && endKm && !DistanceRules.validateDistance(startKm, endKm)) {
+                    return this.createError({message: "Start km skal være mindre end slut km"});
                 }
+                
+                // if no validation error, return true to indicate passed validation
                 return true;
             }
         ),
@@ -111,25 +150,35 @@ function MainRegComp() {
         endTime: Yup.string().matches(TimeRules.timeRegex).required("Slut tid er påkrævet"),
         endKm: Yup.string().matches(KmRules.kmRegex).required("Slut km er påkrævet"),
         remark: Yup.string().nullable().notRequired(),
+
         timePeriodValid: Yup.mixed().test(
-            "timePeriod", "Start tid skal være før sluttid",
-            function (value) {
+            "timePeriod",
+            "Starttid skal være før sluttid",
+            function () {
                 const { startTime, endTime } = this.parent;
-                const isValid = TimePeriodRules.validateTimePeriod(startTime, endTime);
-                if (startTime && endTime && !isValid) {
+
+                // Checks if both start time and end time are defined and if time period is valid.
+                // if invalid time period (end time before start time) return an error
+                if (startTime && endTime && !TimePeriodRules.validateTimePeriod(startTime, endTime)) {
                     return this.createError({ message: "Starttid skal være før sluttid" });
                 }
+
+                // if no validation error, return true to indicate passed validation 
                 return true;
             }
         ),
         kmDistanceValid: Yup.mixed().test(
             "distance", "Start km skal være mindre end slut km",
-            function (value) {
+            function () {
                 const { startKm, endKm } = this.parent;
-                const isValid = DistanceRules.validateDistance(startKm, endKm);
-                if (startKm && endKm && !isValid) {
-                    return this.createError({ message: "Start km skal være mindre end slut km" });
+
+                // Checks if both start km and end km are defined and if km distance is valid.
+                // if invalid distance (end km before start km) return an error
+                if (startKm && endKm && !DistanceRules.validateDistance(startKm, endKm)) {
+                    return this.createError({message: "Start km skal være mindre end slut km"});
                 }
+
+                // if no validation error, return true to indicate passed validation
                 return true;
             }
         ),
@@ -143,12 +192,18 @@ function MainRegComp() {
         try {
             await schema.validate(taskData, { abortEarly: false });
             setErrors({});
+            
+            // if no validation error, return true to indicate passed validation
             return true;
+            
         } catch (error) {
             if (error instanceof Yup.ValidationError) {
                 const validationError: TaskErrors = {};
-                error.inner.forEach((err) => {
-                    validationError[err.path as string] = err.message;
+                
+                // Iterates through all errors and adds them to the validationError object
+                error.inner.forEach((validationErrorDetails) => {
+                    // Assigns the error message to the corresponding field path in the validation error object
+                    validationError[validationErrorDetails.path as string] = validationErrorDetails.message;
                 });
                 setErrors(validationError);
             }
@@ -158,79 +213,127 @@ function MainRegComp() {
 
 
     const handleFieldChange = (field: keyof TaskData, value: string) => {
-        const trimmedValue = value.trim() || "";
+        // Trim the value and set it to an empty string if it is empty
+        const trimmedValue = value.trim();
+        const finalValue = trimmedValue === "" ? "" : trimmedValue;
 
         // Update the task data state with the new value for the field
-        setTaskData((prevData) => ({ ...prevData, [field]: trimmedValue }));
+        setTaskData((prevData) => {
+            const updatedData = { ...prevData };
+            updatedData[field] = finalValue;
+            return updatedData;
+        });
 
-        if (trimmedValue === ""){
-            setErrors((prevErrors) => {
-                const {[field]: _, ...restErrors } = prevErrors;
-                return restErrors;
-            });
-            return;
-        }
+        // Updates errors state if the field is empty, removing any error associated with it
+        setErrors((prevErrors) => {
+            const updatedErrors = { ...prevErrors };
+
+            // If the value is empty, remove the error for this field
+            if (finalValue === "") {
+                delete updatedErrors[field];
+            }
+
+            // Validate startTime and endTime for correct time format if the field isn't empty
+            if ((field === "startTime" || field === "endTime") && finalValue !== "") {
+                const isValidTime = TimeRules.timeRegex.test(finalValue);
+                if (!isValidTime) {
+                    // Sets an error message if the time format is not correct
+                    updatedErrors[field] = field === "startTime"
+                        ? "Starttid skal være hh:mm format"
+                        : "Sluttid skal være hh:mm format";
+                } else {
+                    // Remove error if the time is valid
+                    delete updatedErrors[field];
+                }
+            }
+
+            // Validate startKm and endKm for correct km format if the field isn't empty
+            if ((field === "startKm" || field === "endKm") && finalValue !== "") {
+                const isValidKm = KmRules.kmRegex.test(finalValue);
+                if (!isValidKm) {
+                    // Sets an error message if km format is not correct
+                    updatedErrors[field] = "Ikke korrekt km format";
+                } else {
+                    // Remove error if km format is valid
+                    delete updatedErrors[field];
+                }
+            }
+
+            return updatedErrors;
+        });
+    
         
-        // Validate startKm and endKm for numeric format
-        if (field === "startKm" || field === "endKm") {
-            const isValid = KmRules.kmRegex.test(trimmedValue);
-            if (!isValid) {
+        // Validate time period (startTime should be before endTime)
+        if (field === "startTime" || field === "endTime") {
+            const isTimeValid = TimePeriodRules.validateTimePeriod(taskData.startTime, taskData.endTime);
+            if (!isTimeValid) {
+                // sets error message if startTime is after endTime
                 setErrors((prevErrors) => ({
                     ...prevErrors,
-                    [field]: "Ugyldigt km format",
+                    timePeriodValid: "Starttid skal være før sluttid",
                 }));
             } else {
+                // removes time period error if valid
                 setErrors((prevErrors) => {
-                    const { [field]: _, ...restErrors } = prevErrors;
+                    const { timePeriodValid, ...restErrors } = prevErrors;
                     return restErrors;
                 });
             }
         }
 
-        // Validate startTime and endTime for correct time format
-        if (field === "startTime" || field === "endTime") {
-            
-            const isValidTime = TimeRules.timeRegex.test(trimmedValue);
-            
-            if (!isValidTime) {
+        // Validate distance (startKm should be less than endKm)
+        if (field === "startKm" || field === "endKm") {
+            const isKmValid = DistanceRules.validateDistance(taskData.startKm, taskData.endKm);
+            if (!isKmValid) {
+                // sets error message if endKm is less or equal to startKm
                 setErrors((prevErrors) => ({
                     ...prevErrors,
-                    [field]: "Ugyldigt tidsformat (hh:mm)",
+                    kmDistanceValid: "Start km skal være mindre end slut km",
                 }));
             } else {
+                // removes distance error if valid
                 setErrors((prevErrors) => {
-                    const { [field]: _, ...restErrors } = prevErrors;
+                    const { kmDistanceValid, ...restErrors } = prevErrors;
                     return restErrors;
                 });
             }
-            
-            
         }
-    };
+    };   
     
     
-    
-    const handleAnnullerClick = () => {
-    
+    // This function switches the view to history without performing any database save operation
+    function handleAnnullerClick(): void {
         console.log("Annuller...")
-        console.log(localStorage.getItem('username'));
         changeViewToHistory();
     }
 
 
-    function saveToDatabase() {
-        
-    }
+    
 
+    
+    // TODO: HERFRA MAAAAAAANGLER FÆRDIGGØRELSE + KOMMENTARER
+    
+    
+    
     
 
     const handleSaveClick = async () => {
+        // Checks if all fields in taskData are empty
+        const areAllFieldsEmpty = Object.values(taskData).every((value) => value.trim() === "");
+
+        // Changes view to '/history' if all fields are empty
+        if (areAllFieldsEmpty) {
+            console.log("Alle felter er tomme... Skifter view");
+            changeViewToHistory(); 
+            return; 
+        }
+
+        // Validates data if all fields isn't empty
         const isValid = await validateTaskData(false);
-        
         if (isValid) {
             console.log("Valid indtastning. Gemmer som kladde...")
             // TODO: save to db
-            saveToDatabase();
+            //saveToDatabase();
             changeViewToHistory();
             
         } else {
@@ -240,17 +343,26 @@ function MainRegComp() {
     };
 
     const handleSendClick = async () => {
-        const isValid = await validateTaskData(true); // For Send
+        const isValid = await validateTaskData(true); 
         if (isValid) {
             console.log("Send indtastning...");
             // TODO: send data
-            await sendToDatabase();
+            //await sendToDatabase();
             changeViewToHistory();
         } else {
             console.log("Fejl i indtastning. Kan ikke sende...");
         }    
     };
 
+    
+    
+
+    function saveToDatabase() {
+
+    }
+    
+    
+    
     const sendToDatabase = async () => {
         try {
             
@@ -310,8 +422,8 @@ function MainRegComp() {
                 titleStartKm={"Start km"}
                 timeStart={taskData.startTime}
                 kmStart={taskData.startKm}
-                errorTime={!!errors.startTime}
-                errorKm={!!errors.startKm}
+                errorTimeMessage={errors.startTime}
+                errorKmMessage={errors.startKm}
                 onTimeChange={(value) => handleFieldChange('startTime', value)}
                 onKmChange={(value) => handleFieldChange('startKm', value)}
                 
@@ -323,8 +435,8 @@ function MainRegComp() {
                         timeEnd={taskData.endTime} 
                         kmEnd={taskData.endKm} 
                         remarkVal={taskData.remark} 
-                        errorTime={!!errors.endTime}
-                        errorKm={!!errors.endKm}
+                        errorTimeMessage={errors.endTime}
+                        errorKmMessage={errors.endKm}
                         onTimeChange={(value) => handleFieldChange('endTime', value)} 
                         onKmChange={(value) => handleFieldChange('endKm', value)} 
                         onRemarkChange={(value) => handleFieldChange('remark', value)}
