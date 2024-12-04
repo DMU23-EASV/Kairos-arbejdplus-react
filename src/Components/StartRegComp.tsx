@@ -23,12 +23,12 @@ const StartRegComp: React.FC<StartRegCompProps> = ({ titleStartTime, titleStartK
             <div className='regComponent-wrapper'>
                 <TimeComp title={titleStartTime}
                           value={timeStart}
-                          error={errorTime || false}
+                          error={errorTime}
                           onTimeChange={onTimeChange}/>
 
                 <KmComp title={titleStartKm}
                         value={kmStart}
-                        error={errorKm || false}
+                        error={errorKm}
                         onKmChange={onKmChange}/>
             </div>
     );

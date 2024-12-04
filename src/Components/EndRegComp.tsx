@@ -26,12 +26,12 @@ const EndRegComp: React.FC<EndRegCompProps> = ({ titleEndTime, titleEndKm, title
         <div className='regComponent-wrapper'>
             <TimeComp title={titleEndTime}
                       value={timeEnd}
-                      error={errorTime || false}
+                      error={errorTime}
                       onTimeChange={onTimeChange}/>
 
             <KmComp title={titleEndKm}
                     value={kmEnd}
-                    error={errorKm || false}
+                    error={errorKm}
                     onKmChange={onKmChange}/>
             
             <RemarkComp title={titleRemark}

@@ -22,7 +22,7 @@ interface TaskData {
 }
 
 interface TaskErrors{
-    [key:string]: string | undefined;
+    [key:string]: boolean | undefined;
 }
 
 function MainRegComp() {
@@ -52,85 +52,70 @@ function MainRegComp() {
 
 
     const validationSchemaSave = Yup.object({
-        startTime: Yup.string().matches(TimeRules.timeRegex, "Start time must be in HH:mm format")
-            .nullable()
-            .transform((curr, orig) => orig === "" ? null : curr)  
-            .notRequired(),
-        startKm: Yup.string().matches(KmRules.kmRegex, "Invalid km format")
-            .nullable()
-            .transform((curr, orig) => orig === "" ? null : curr)  
-            .notRequired(),
-        endTime: Yup.string().matches(TimeRules.timeRegex, "End time must be in HH:mm format")
-            .nullable()
-            .transform((curr, orig) => orig === "" ? null : curr)  
-            .notRequired(),
-        endKm: Yup.string().matches(KmRules.kmRegex, "Invalid km format")
-            .nullable()
-            .transform((curr, orig) => orig === "" ? null : curr)  
-            .notRequired(),
-        remark: Yup.string().nullable()
-            .transform((curr, orig) => orig === "" ? null : curr)  
-            .notRequired(),
-        
-        timePeriodValid: Yup.mixed().test(
-            "timePeriod", "Start tid skal være før sluttid",
-            function (value) {
-                const { startTime, endTime } = this.parent;
-                
-                if (startTime && endTime) {
-                    const isValid = TimePeriodRules.validateTimePeriod(startTime, endTime);
-                    if (startTime && endTime && !isValid) {
-                        return this.createError({message: "Starttid skal være før sluttid"});
-                    }
+        startTime: Yup.string().matches(TimeRules.timeRegex).nullable().transform((current, original) => original == "" ? null : current).notRequired(),
+        startKm: Yup.string().matches(KmRules.kmRegex).nullable().transform((current, original) => original == "" ? null : current).notRequired(),
+        endTime: Yup.string().matches(TimeRules.timeRegex).nullable().transform((current, original) => original == "" ? null : current).notRequired(),
+        endKm: Yup.string().matches(KmRules.kmRegex).nullable().transform((current, original) => original == "" ? null : current).notRequired(),
+        remark: Yup.string().nullable().transform((current, original) => original == "" ? null : current).notRequired(),
+
+    }).test("timePeriod", "invalid time period", function () {
+            const {startTime, endTime} = this.parent;
+
+            if (startTime && endTime) {
+                const isValid = TimePeriodRules.validateTimePeriod(startTime, endTime);
+                if (!isValid) {
+                    return this.createError({ path: "endTime"});
                 }
-                return true;
             }
-        ),
-        kmDistanceValid: Yup.mixed().test(
-            "distance", "Start km skal være mindre end slut km",
-            function () {
-                const { startKm, endKm } = this.parent;
-                
-                if (startKm && endKm) {
-                    const isValid = DistanceRules.validateDistance(startKm, endKm);
-                    if (startKm && endKm && !isValid) {
-                        return this.createError({message: "Start km skal være mindre end slut km"});
-                    }
+            return true;
+            
+            
+            
+        }).test("distance", "invalid distance", function () {
+            const { startKm, endKm } = this.parent;
+
+            if (startKm && endKm) {
+                const isValid = DistanceRules.validateDistance(startKm, endKm);
+                if (!isValid) {
+                    return this.createError({ path: "endKm" });
                 }
-                return true;
             }
-        ),
-    });
+            return true;
+        }
+    );
+    
+    
 
     const validationSchemaSend = Yup.object({
-        startTime: Yup.string().matches(TimeRules.timeRegex).required("Start tid er påkrævet"),
-        startKm: Yup.string().matches(KmRules.kmRegex).required("Start km er påkrævet"),
-        endTime: Yup.string().matches(TimeRules.timeRegex).required("Slut tid er påkrævet"),
-        endKm: Yup.string().matches(KmRules.kmRegex).required("Slut km er påkrævet"),
+        startTime: Yup.string().matches(TimeRules.timeRegex).required(),
+        startKm: Yup.string().matches(KmRules.kmRegex).required(),
+        endTime: Yup.string().matches(TimeRules.timeRegex).required(),
+        endKm: Yup.string().matches(KmRules.kmRegex).required(),
         remark: Yup.string().nullable().notRequired(),
-        timePeriodValid: Yup.mixed().test(
-            "timePeriod", "Start tid skal være før sluttid",
-            function (value) {
-                const { startTime, endTime } = this.parent;
-                const isValid = TimePeriodRules.validateTimePeriod(startTime, endTime);
-                if (startTime && endTime && !isValid) {
-                    return this.createError({ message: "Starttid skal være før sluttid" });
-                }
-                return true;
+    }).test("timePeriod", "", function () {
+        const {startTime, endTime} = this.parent;
+
+        if (startTime && endTime) {
+            const isValid = TimePeriodRules.validateTimePeriod(startTime, endTime);
+            if (!isValid) {
+                return this.createError({path: "endTime"});
             }
-        ),
-        kmDistanceValid: Yup.mixed().test(
-            "distance", "Start km skal være mindre end slut km",
-            function (value) {
-                const { startKm, endKm } = this.parent;
+        }
+        return true;
+
+    }).test("distance", "", function () {
+            const { startKm, endKm } = this.parent;
+
+            if (startKm && endKm) {
                 const isValid = DistanceRules.validateDistance(startKm, endKm);
-                if (startKm && endKm && !isValid) {
-                    return this.createError({ message: "Start km skal være mindre end slut km" });
+                if (!isValid) {
+                    return this.createError({ path: "endKm"});
                 }
-                return true;
             }
-        ),
-    });
+            return true;
+        }
+        
+    );
 
 
 
@@ -141,11 +126,13 @@ function MainRegComp() {
             await schema.validate(taskData, { abortEarly: false });
             setErrors({});
             return true;
+            
         } catch (error) {
+            
             if (error instanceof Yup.ValidationError) {
                 const validationError: TaskErrors = {};
                 error.inner.forEach((err) => {
-                    validationError[err.path as string] = err.message;
+                    validationError[err.path as string] = true;
                 });
                 setErrors(validationError);
             }
@@ -167,42 +154,46 @@ function MainRegComp() {
             });
             return;
         }
-        
-        // Validate startKm and endKm for numeric format
-        if (field === "startKm" || field === "endKm") {
-            const isValid = KmRules.kmRegex.test(trimmedValue);
-            if (!isValid) {
+
+
+        // Validate startTime and endTime for correct time format
+        if (field === "startTime" || field === "endTime") {
+            const isValidTime = TimeRules.timeRegex.test(trimmedValue);
+
+            if (!isValidTime) {
                 setErrors((prevErrors) => ({
                     ...prevErrors,
-                    [field]: "Ugyldigt km format",
+                    [field]: true, 
                 }));
+                
             } else {
                 setErrors((prevErrors) => {
                     const { [field]: _, ...restErrors } = prevErrors;
-                    return restErrors;
+                    return restErrors; 
+                });
+            }
+        }
+        
+        // Validate startKm and endKm for numeric format
+        if (field === "startKm" || field === "endKm") {
+            const isValidKm = KmRules.kmRegex.test(trimmedValue);
+            
+            if (!isValidKm) {
+                setErrors((prevErrors) => ({
+                    ...prevErrors,
+                    [field]: true, 
+                }));
+                
+            } else {
+                setErrors((prevErrors) => {
+                    const { [field]: _, ...restErrors } = prevErrors;
+                    return restErrors; 
                 });
             }
         }
 
-        // Validate startTime and endTime for correct time format
-        if (field === "startTime" || field === "endTime") {
-            
-            const isValidTime = TimeRules.timeRegex.test(trimmedValue);
-            
-            if (!isValidTime) {
-                setErrors((prevErrors) => ({
-                    ...prevErrors,
-                    [field]: "Ugyldigt tidsformat (hh:mm)",
-                }));
-            } else {
-                setErrors((prevErrors) => {
-                    const { [field]: _, ...restErrors } = prevErrors;
-                    return restErrors;
-                });
-            }
-            
-            
-        }
+        console.log("Fejl opdateret:", errors);
+        
     };
     
     
@@ -225,6 +216,8 @@ function MainRegComp() {
             
         } else {
             console.log("Fejl i indtastning. Kan ikke gemme...")
+            
+            
         }
     };
 

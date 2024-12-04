@@ -36,7 +36,7 @@ const KmComp: React.FC<KmCompProps> = ({ title, value, error, onKmChange }) => {
                 sx={{ m: 2, width: '30ch' }}
                 value={inputValue}
                 onChange={handleChange}
-                error={!! error}
+                error={error}
                 // text if error : text if no error
                 helperText={error ? 'Indtast gyldige antal km' : ''}
                 InputProps={{
