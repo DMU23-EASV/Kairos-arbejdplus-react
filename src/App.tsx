@@ -6,6 +6,7 @@ import TopNavigationComp from "./Components/TopNavigationComp.tsx";
 import LoginComp from "./Components/LoginComp.tsx";
 import TimeComp from "./Components/TimeComp.tsx";
 import React from "react";
+import HistoryComp from "./Components/History.tsx";
 
 function App() {
     return (
@@ -34,7 +35,7 @@ const Main: React.FC = () => {
                                 <TimeComp title={"Slut tid"} />
                             </div>
                         } />
-                        <Route path="/history" element={<h1 style={{color: 'black'}}>History Page</h1>} />
+                        <Route path="/history" element={<HistoryComp />} />
                         <Route path="/notifications" element={<h1 style={{color: 'black'}}>Notifications Page</h1>} />
                     </Routes>
                     <BottomNavigationComp />
