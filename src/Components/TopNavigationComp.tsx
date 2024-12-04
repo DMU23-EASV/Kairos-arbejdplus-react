@@ -14,6 +14,8 @@ interface LoginCompProps {
     onLogout: () => void;
 }
 
+
+
 export default function ButtonAppBar({ isLoggedIn, onLogout }: LoginCompProps) {
     return (
         <Box sx={{ flexGrow: 1 }}>
