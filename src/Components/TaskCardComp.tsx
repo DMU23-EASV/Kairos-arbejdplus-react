@@ -16,7 +16,7 @@ import HelpOutlineOutlinedIcon from '@mui/icons-material/HelpOutlineOutlined';
 import NotInterestedOutlinedIcon from '@mui/icons-material/NotInterestedOutlined';
 const TaskCardComp = ({ task }) => {
     //Draft, AwaitingApproval, Rejected, Approved
-    const { status, title , undertitle} = task;
+    const { status, title , undertitle, km, totaltime} = task;
 
     //Default values
     let image = "/Draft.png"
@@ -62,6 +62,13 @@ const TaskCardComp = ({ task }) => {
                 sx={{ color: 'text.secondary', textAlign: 'left' }}
                 >
                     {undertitle}
+                </Typography>
+                <Typography
+                variant="subtitle1"
+                component="div"
+                sx={{ color: 'text.secondary', textAlign: 'left' }}
+                >
+                   Total Tid: {totaltime} / Km: {km}
                 </Typography>
             </CardContent>
           </Box>
