@@ -41,6 +41,8 @@ export default function LoginComp({ onLogin }: LoginCompProps) {
                 return;
             }
             
+            localStorage.setItem("username", username);
+            
             onLogin(username, password);
             
             navigate("/tasks");

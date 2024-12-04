@@ -53,24 +53,14 @@ function MainRegComp() {
 
     const validationSchemaSave = Yup.object({
         startTime: Yup.string().matches(TimeRules.timeRegex, "Start time must be in HH:mm format")
-            .nullable()
-            .transform((curr, orig) => orig === "" ? null : curr)  
-            .notRequired(),
+            .nullable().transform((curr, orig) => orig === "" ? null : curr).notRequired(),
         startKm: Yup.string().matches(KmRules.kmRegex, "Invalid km format")
-            .nullable()
-            .transform((curr, orig) => orig === "" ? null : curr)  
-            .notRequired(),
+            .nullable().transform((curr, orig) => orig === "" ? null : curr).notRequired(),
         endTime: Yup.string().matches(TimeRules.timeRegex, "End time must be in HH:mm format")
-            .nullable()
-            .transform((curr, orig) => orig === "" ? null : curr)  
-            .notRequired(),
+            .nullable().transform((curr, orig) => orig === "" ? null : curr).notRequired(),
         endKm: Yup.string().matches(KmRules.kmRegex, "Invalid km format")
-            .nullable()
-            .transform((curr, orig) => orig === "" ? null : curr)  
-            .notRequired(),
-        remark: Yup.string().nullable()
-            .transform((curr, orig) => orig === "" ? null : curr)  
-            .notRequired(),
+            .nullable().transform((curr, orig) => orig === "" ? null : curr).notRequired(),
+        remark: Yup.string().nullable().transform((curr, orig) => orig === "" ? null : curr).notRequired(),
         
         timePeriodValid: Yup.mixed().test(
             "timePeriod", "Start tid skal være før sluttid",
@@ -210,6 +200,7 @@ function MainRegComp() {
     const handleAnnullerClick = () => {
     
         console.log("Annuller...")
+        console.log(localStorage.getItem('username'));
         changeViewToHistory();
     }
     
