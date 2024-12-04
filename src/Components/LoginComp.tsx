@@ -1,18 +1,56 @@
 import TextField from '@mui/material/TextField';
 import Button from '@mui/material/Button';
-import {APP_NAME} from "../Constants.ts";
-import {Link} from "react-router-dom";
+import {APP_NAME, LOGIN_ENDPOINT} from "../Constants.ts";
+import {useNavigate} from "react-router-dom";
 import './LoginComp.css'
+import {useState} from "react";
 
 interface LoginCompProps {
-    onLogin: () => void; // Needs to be changed to some form of login validation call
+    onLogin: (username: string, password: string) => void; 
 }
 
-let username: string = ""
-let password: string = ""
-
-
 export default function LoginComp({ onLogin }: LoginCompProps) {
+    
+    const [username, setUsername] = useState<string>("");
+    const [password, setPassword] = useState<string>("");
+    
+    const navigate = useNavigate();
+    
+    const handleLogin = async () => {
+        try {
+            const response = await fetch(LOGIN_ENDPOINT, {
+                method: "POST",
+                headers: {
+                    "Content-Type": "application/json", 
+                },
+                body: JSON.stringify({
+                        username: username,
+                        password: password
+            }),
+            });
+            console.log("After fetch")
+            
+            if (response.status === 401) {
+                alert('Unauthorized: Invalid username or password.');
+                return;
+            }
+            
+            if (!response.ok) {
+                const errorMessage = await response.text();
+                alert(`Error: ${errorMessage || 'Something went wrong'}`);
+                return;
+            }
+            
+            onLogin(username, password);
+            
+            navigate("/tasks");
+            
+        } catch (error) {
+            console.error('Error during login:', error);
+            alert('Unable to connect to the server. Please try again later.');
+        }
+        
+    }
     
     return (
         
@@ -35,6 +73,7 @@ export default function LoginComp({ onLogin }: LoginCompProps) {
                     defaultValue=""
                     color="primary"
                     value={username}
+                    onChange={(e) => setUsername(e.target.value)}
                 />
                 <TextField
                     id="outlined-password-input"
@@ -42,14 +81,13 @@ export default function LoginComp({ onLogin }: LoginCompProps) {
                     type="password"
                     color="primary"
                     value={password}
+                    onChange={(e) => setPassword(e.target.value)}
                 />
             </div>
             <div className='login-wrapper-buttons'>
                 <Button
                     variant="contained"
-                    onClick={onLogin}
-                    component={Link}
-                    to="/tasks"
+                    onClick={handleLogin}
                 >
                     Login
                 </Button>
