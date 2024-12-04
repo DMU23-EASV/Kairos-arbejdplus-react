@@ -41,7 +41,7 @@ export default function LoginComp({ onLogin }: LoginCompProps) {
                 return;
             }
             
-            localStorage.setItem("username", username);
+            sessionStorage.setItem("username", username);
             
             onLogin(username, password);
             

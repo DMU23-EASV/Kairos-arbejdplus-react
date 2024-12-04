@@ -4,13 +4,14 @@ import {useEffect, useRef, useState} from "react";
 import RegTaskHeadlineComp from "./RegTaskHeadlineComp.tsx";
 import EndRegComp from "./EndRegComp.tsx";
 import Button from "@mui/material/Button";
-import {NEW_TASK_PAGE_TITLE} from "../Constants.ts";
+import {NEW_TASK_PAGE_TITLE, SEND_TASK_ENDPOINT} from "../Constants.ts";
 import {Link} from "react-router-dom";
 import { Stack } from '@mui/material';
 import {TimeRules} from "../Services/ValidationRules/TimeRules.ts";
 import {KmRules} from "../Services/ValidationRules/KmRules.ts";
 import {TimePeriodRules} from "../Services/ValidationRules/TimePeriodRules.ts";
 import {DistanceRules} from "../Services/ValidationRules/DistanceRules.ts";
+import {ETaskStatus} from "../Enum/ETaskStatus.ts";
 
 
 interface TaskData {
@@ -24,6 +25,18 @@ interface TaskData {
 interface TaskErrors{
     [key:string]: string | undefined;
 }
+
+interface TaskToSendDTO{
+    name: string;
+    owner: string
+    startTime: string;
+    startKm: string;
+    endTime: string;
+    endKm: string;
+    comment: string;
+    taskStatus: number;
+}
+
 
 function MainRegComp() {
 
@@ -203,19 +216,26 @@ function MainRegComp() {
         console.log(localStorage.getItem('username'));
         changeViewToHistory();
     }
+
+
+    function saveToDatabase() {
+        
+    }
+
     
-    
-    
+
     const handleSaveClick = async () => {
         const isValid = await validateTaskData(false);
         
         if (isValid) {
             console.log("Valid indtastning. Gemmer som kladde...")
             // TODO: save to db
+            saveToDatabase();
             changeViewToHistory();
             
         } else {
             console.log("Fejl i indtastning. Kan ikke gemme...")
+            notifyUser("Fejl i indtastning...")
         }
     };
 
@@ -224,30 +244,57 @@ function MainRegComp() {
         if (isValid) {
             console.log("Send indtastning...");
             // TODO: send data
+            await sendToDatabase();
+            changeViewToHistory();
         } else {
             console.log("Fejl i indtastning. Kan ikke sende...");
-        }    };
-           
-    /*
-            
-    async function saveToDatabase() {
-        console.log("Saving to database...")
-        // simulation
-        await new Promise(resolve => setTimeout(resolve, 10000));
-        console.log("Data saved to database")
-    }
+        }    
+    };
 
-    async function onSendClick(){
-        
-        
-    }
-    */
-    
-    
-    
+    const sendToDatabase = async () => {
+        try {
+            
+            //  
+            const taskToSend: TaskToSendDTO = {
+                startTime: taskData.startTime,
+                startKm: taskData.startKm,
+                endTime: taskData.endTime,
+                endKm: taskData.endKm,
+                comment: taskData.remark,
+                taskStatus: ETaskStatus.AwaitingApproval
+            };
+
+            
+            const response = await fetch(SEND_TASK_ENDPOINT, {
+                method: "POST",
+                headers: {
+                    "Content-Type": "application/json",
+                },
+                body: JSON.stringify(taskToSend), 
+            });
+
+            console.log("After fetch");
+            
+            if (!response.ok) {
+                const errorMessage = await response.text();
+                notifyUser(errorMessage);
+                return;
+            }
+
+            console.log("Data sendt til serveren");
+            notifyUser("Task sent successfully!")
+
+        } catch (error) {
+            console.error(error);
+            notifyUser("Unable to send the task. Please try again later");
+        }
+    };
+
+
+
     function notifyUser(message:string): void {
         // TODO: IMPLEMENT LOGIC!
-        
+        alert(message);
         console.log(message)
     }
     
@@ -255,9 +302,8 @@ function MainRegComp() {
     return (
         <div className='regMainComponent-container mainComponent-wrapper'>
             <RegTaskHeadlineComp
-                title={NEW_TASK_PAGE_TITLE}
-                date={"11. november 2024"}                  
-                />
+                title={NEW_TASK_PAGE_TITLE} 
+            />
             
             <StartRegComp
                 titleStartTime={"Start tid"}
