@@ -30,14 +30,14 @@ export class TimePeriodRules {
     }
 
 
-    private static getHour(time: string): number {
+    public static getHour(time: string): number {
 
         let timeSplit = time.split(":");
         return parseInt(timeSplit[0]);
     }
 
 
-    private static getMinutes(time: string): number {
+    public static getMinutes(time: string): number {
 
         let timeSplit = time.split(":");
         return parseInt(timeSplit[1]);

@@ -13,30 +13,24 @@ import {TimePeriodRules} from "../Services/ValidationRules/TimePeriodRules.ts";
 import {DistanceRules} from "../Services/ValidationRules/DistanceRules.ts";
 import {ETaskStatus} from "../Enum/ETaskStatus.ts";
 import {NotificationUser} from "../Services/NotificationUser.ts";
+import {TaskModel} from "../Models/TaskModel.ts";
 
 
 interface TaskData {
+    date: Date;
     startTime: string;
     startKm: string;
     endTime: string;
     endKm: string;
     remark: string;
+    //status?: ETaskStatus;
 }
 
 interface TaskErrors{
     [key:string]: string | undefined;
 }
 
-interface TaskToSendDTO{
-    name: string;
-    owner: string
-    startTime: string;
-    startKm: string;
-    endTime: string;
-    endKm: string;
-    comment: string;
-    taskStatus: number;
-}
+
 
 
 function MainRegComp() {
@@ -50,10 +44,14 @@ function MainRegComp() {
             linkRefHistory.current.click();
         }
     }
-    
+
+    // task object to save in database
+    const taskObj: TaskModel = new TaskModel();
+
 
     // State holding an object with task details: start time, start km, end time, end km, and remark
     const [taskData, setTaskData] = useState<TaskData>({
+        date: new Date(),
         startTime: "",
         startKm: "",
         endTime: "",
@@ -224,7 +222,9 @@ function MainRegComp() {
     };
 
 
-    const handleFieldChange = (field: keyof TaskData, value: string) => {
+    const handleFieldChange = (field: keyof TaskData, value: string | Date) => {
+
+
         // Trim the value and set it to an empty string if it is empty
         const trimmedValue = value.trim();
         const finalValue = trimmedValue === "" ? "" : trimmedValue;
@@ -273,8 +273,8 @@ function MainRegComp() {
 
             return updatedErrors;
         });
-    
-        
+
+
         // Validate time period (startTime should be before endTime)
         if (field === "startTime" || field === "endTime") {
             const isTimeValid = TimePeriodRules.validateTimePeriod(taskData.startTime, taskData.endTime);
@@ -310,7 +310,22 @@ function MainRegComp() {
                 });
             }
         }
-    };   
+    };
+
+
+    const handleDatePickerChange = (field: keyof TaskData, value: Date) => {
+
+        // Update the task data state with the new value for the field
+        setTaskData((prevData) => {
+            const updatedData = { ...prevData };
+
+            if (field === "date") {
+                updatedData[field] = value;
+            }
+
+            return updatedData;
+        });
+    };
     
     
     // This function switches the view to history without performing any database save operation
@@ -326,7 +341,41 @@ function MainRegComp() {
     // TODO: HERFRA MAAAAAAANGLER FÆRDIGGØRELSE + KOMMENTARER
     
     
-    
+    function createTaskObj(taskData:TaskData, modelStatus:ETaskStatus): TaskModel{
+
+        taskObj.remark = taskData.remark;
+        taskObj.modelStatus = modelStatus;
+        taskObj.owner = sessionStorage.getItem("user")?.toString();
+        taskObj.selecteDate = taskData.date;
+
+        if (taskData.date && taskData.startTime) {
+            const combinedDateStartTime: Date = new Date(taskData.date);
+
+            const startHours: number = TimePeriodRules.getHour(taskData.startTime);
+            const startMinutes: number = TimePeriodRules.getMinutes(taskData.startTime);
+
+            combinedDateStartTime.setHours(startHours, startMinutes, 0, 0);
+
+            taskObj.startTime = combinedDateStartTime;
+        }
+
+        if (taskData.date && taskData.endTime){
+            const combinedDateEndTime: Date = new Date(taskData.date);
+
+            const endHours: number = TimePeriodRules.getHour(taskData.endTime);
+            const endMinutes: number = TimePeriodRules.getMinutes(taskData.endTime);
+
+            combinedDateEndTime.setHours(endHours, endMinutes, 0, 0);
+
+            taskObj.endTime = combinedDateEndTime;
+        }
+
+        taskObj.startKm = parseInt(taskData.startKm);
+        taskObj.endKm = parseInt(taskData.endKm);
+
+
+        return taskObj;
+    }
     
 
     const handleSaveClick = async () => {
@@ -344,8 +393,11 @@ function MainRegComp() {
         const isValid = await validateTaskData(false);
         if (isValid) {
             console.log("Valid indtastning. Gemmer som kladde...")
+
+            taskData.modelStatus = ETaskStatus.AwaitingApproval
+
             // TODO: save to db
-            //saveToDatabase();
+            saveToDatabase();
             changeViewToHistory();
             
         } else {
@@ -376,43 +428,65 @@ function MainRegComp() {
     
     
     const sendToDatabase = async () => {
-        try {
-            
-            //  
-            const taskToSend: TaskToSendDTO = {
-                startTime: taskData.startTime,
-                startKm: taskData.startKm,
-                endTime: taskData.endTime,
-                endKm: taskData.endKm,
-                comment: taskData.remark,
-                taskStatus: ETaskStatus.AwaitingApproval
+
+
+        /*
+                try {
+
+
+                    const taskToSend: TaskModel = {
+
+                        //Casting starttime from string to date,
+
+                        //const hours:any = TimePeriodRules.getHour(taskData.startTime);
+
+
+                        endTime === null ? null : endTime = selecDate;
+
+                        startTime :Date = selectedDate;
+
+                        startKm: taskData.startKm,
+                        endTime: taskData.endTime,
+                        endKm: taskData.endKm,
+                        remark: taskData.remark,
+                        taskStatus: taskData.
+
+
+
+
+
+
+                    };
+
+
+                    const response = await fetch(SEND_TASK_ENDPOINT, {
+                        method: "POST",
+                        headers: {
+                            "Content-Type": "application/json",
+                        },
+                        body: JSON.stringify(taskToSend),
+                    });
+
+                    console.log("After fetch");
+
+                    if (!response.ok) {
+                        const errorMessage = await response.text();
+                        NotificationUser.notifyUser(errorMessage);
+                        return;
+                    }
+
+                    console.log("Data sendt til serveren");
+                    NotificationUser.notifyUser("Task sent successfully!")
+
+                } catch (error) {
+                    console.error(error);
+                    NotificationUser.notifyUser("Kan ikke sende data, prøv igen");
+                }
+
+         */
             };
 
-            
-            const response = await fetch(SEND_TASK_ENDPOINT, {
-                method: "POST",
-                headers: {
-                    "Content-Type": "application/json",
-                },
-                body: JSON.stringify(taskToSend), 
-            });
 
-            console.log("After fetch");
-            
-            if (!response.ok) {
-                const errorMessage = await response.text();
-                NotificationUser.notifyUser(errorMessage);
-                return;
-            }
-
-            console.log("Data sendt til serveren");
-            NotificationUser.notifyUser("Task sent successfully!")
-
-        } catch (error) {
-            console.error(error);
-            NotificationUser.notifyUser("Kan ikke sende data, prøv igen");
-        }
-    };
 
     
     
@@ -424,12 +498,15 @@ function MainRegComp() {
             />
             
             <StartRegComp
+                titleDate={"Dato"}
                 titleStartTime={"Start tid"}
                 titleStartKm={"Start km"}
+                date={taskData.date}
                 timeStart={taskData.startTime}
                 kmStart={taskData.startKm}
                 errorTimeMessage={errors.startTime}
                 errorKmMessage={errors.startKm}
+                onDateChange={(value) => handleDatePickerChange('date', value)}
                 onTimeChange={(value) => handleFieldChange('startTime', value)}
                 onKmChange={(value) => handleFieldChange('startKm', value)}
                 
