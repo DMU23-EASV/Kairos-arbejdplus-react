@@ -6,24 +6,19 @@ import { DatePicker } from '@mui/x-date-pickers/DatePicker';
 
 interface DateCompProps{
     title: string;
-    value?: Dayjs;
-    onDateChange: (value: Date) => void;
+    value?: Dayjs | null;
+    onDateChange: (value: Dayjs | null) => void;
 }
 
 
 const DateComp: React.FC<DateCompProps> = ({ title, value, onDateChange }) => {
-    const [dateValue, setDateValue] = React.useState<Dayjs>(value? dayjs(value) : dayjs);
-
-    const handleDateChange = (newDateValue: Dayjs | null) => {
-
-        if (newDateValue){
-            setDateValue(newDateValue);
-            onDateChange(newDateValue.toDate());
-
-            console.log("dato valgt:", newDateValue);
+    
+    const handleDateChange = (newVal:Dayjs | null) => {
+        if (newVal){
+            onDateChange(newVal);
         }
     };
-
+    
 
     return (
         <div className="regComponent-container">
@@ -33,7 +28,7 @@ const DateComp: React.FC<DateCompProps> = ({ title, value, onDateChange }) => {
                     label={title}
                     sx={{ m: 2, width: '30ch' }}
                     slotProps={{ textField: { size: 'small' } }}
-                    value={dateValue}
+                    value={value ? dayjs(value) : null}
                     onChange={handleDateChange}
                 />
             </LocalizationProvider>

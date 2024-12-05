@@ -18,7 +18,9 @@ interface EndRegCompProps {
 
 
 // StartRegComp is a functional component that uses the StartRegCompProps interface to define the props ({ time, km, onTimeChange, onKmChange }).
-const EndRegComp: React.FC<EndRegCompProps> = ({ titleEndTime, titleEndKm, titleRemark, timeEnd, kmEnd, remarkVal, errorTimeMessage, errorKmMessage, onTimeChange, onKmChange, onRemarkChange }) => {
+const EndRegComp: React.FC<EndRegCompProps> = ({ 
+    titleEndTime, titleEndKm, titleRemark, timeEnd, kmEnd, remarkVal, errorTimeMessage, errorKmMessage, onTimeChange, onKmChange, onRemarkChange 
+}) => {
 
     
     return (
