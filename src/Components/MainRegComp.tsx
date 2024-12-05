@@ -12,6 +12,7 @@ import {KmRules} from "../Services/ValidationRules/KmRules.ts";
 import {TimePeriodRules} from "../Services/ValidationRules/TimePeriodRules.ts";
 import {DistanceRules} from "../Services/ValidationRules/DistanceRules.ts";
 import {ETaskStatus} from "../Enum/ETaskStatus.ts";
+import {NotificationUser} from "../Services/NotificationUser.ts";
 
 
 interface TaskData {
@@ -67,50 +68,50 @@ function MainRegComp() {
 
     const validationSchemaSave = Yup.object({
         startTime: Yup.string().matches(TimeRules.timeRegex, "Starttid skal være hh:mm format").nullable()
-            .transform(function (curr, orig) {
+            .transform(function (current, orig) {
                 if (orig === "") {
                     return null;
                 } else {
-                    return curr;
+                    return current;
                 }
             }).notRequired(),
         
         startKm: Yup.string().matches(KmRules.kmRegex, "Ikke korrekt km format").nullable()
-            .transform(function (curr, orig) {
+            .transform(function (current, orig) {
                 if (orig === "") {
                     return null;
                 } else {
-                    return curr;
+                    return current;
                 }
             }).notRequired(),
         
         endTime: Yup.string().matches(TimeRules.timeRegex, "Sluttid skal være hh:mm format").nullable()
-            .transform(function (curr, orig) {
+            .transform(function (current, orig) {
                 if (orig === "") {
                     return null;
                 } else {
-                    return curr;
+                    return current;
                 }
             }).notRequired(),
         
         endKm: Yup.string().matches(KmRules.kmRegex, "Ikke korrekt km format").nullable()
-            .transform(function (curr, orig) {
+            .transform(function (current, orig) {
                 if (orig === "") {
                     return null;
                 } else {
-                    return curr;
+                    return current;
                 }
             }).notRequired(),
         
         remark: Yup.string().nullable()
-            .transform(function (curr, orig) {
+            .transform(function (current, orig) {
                 if (orig === "") {
                     return null;
                 } else {
-                    return curr;
+                    return current;
                 }
             }).notRequired(),
-        
+        // TODO: timeperiod and distance do not throw an error message to user - it's only catches the error
         timePeriodValid: Yup.mixed().test(
             "timePeriod", 
             "Starttid skal være før sluttid",
@@ -120,9 +121,19 @@ function MainRegComp() {
                 // Checks if both start time and end time are defined and if time period is valid.
                 // if invalid time period (end time before start time) return an error
                 if (startTime && endTime && !TimePeriodRules.validateTimePeriod(startTime, endTime)) {
-                    return this.createError({ message: "Starttid skal være før sluttid" });
+                    this.createError({
+                        path: `${this.path}.startTime`,
+                        message: "Starttid skal være før sluttid",
+                    });
+
+                    this.createError({
+                        path: `${this.path}.endTime`,
+                        message: "Starttid skal være før sluttid",
+                    });
+
+                    return false;
                 }
-                
+
                 // if no validation error, return true to indicate passed validation 
                 return true;
             }
@@ -150,7 +161,8 @@ function MainRegComp() {
         endTime: Yup.string().matches(TimeRules.timeRegex).required("Slut tid er påkrævet"),
         endKm: Yup.string().matches(KmRules.kmRegex).required("Slut km er påkrævet"),
         remark: Yup.string().nullable().notRequired(),
-
+        
+        // TODO: timeperiod and distance do not throw an error message to user - it's only catches the error
         timePeriodValid: Yup.mixed().test(
             "timePeriod",
             "Starttid skal være før sluttid",
@@ -338,7 +350,7 @@ function MainRegComp() {
             
         } else {
             console.log("Fejl i indtastning. Kan ikke gemme...")
-            notifyUser("Fejl i indtastning...")
+            NotificationUser.notifyUser("Fejl i indtastning...")
         }
     };
 
@@ -389,26 +401,20 @@ function MainRegComp() {
             
             if (!response.ok) {
                 const errorMessage = await response.text();
-                notifyUser(errorMessage);
+                NotificationUser.notifyUser(errorMessage);
                 return;
             }
 
             console.log("Data sendt til serveren");
-            notifyUser("Task sent successfully!")
+            NotificationUser.notifyUser("Task sent successfully!")
 
         } catch (error) {
             console.error(error);
-            notifyUser("Unable to send the task. Please try again later");
+            NotificationUser.notifyUser("Kan ikke sende data, prøv igen");
         }
     };
 
-
-
-    function notifyUser(message:string): void {
-        // TODO: IMPLEMENT LOGIC!
-        alert(message);
-        console.log(message)
-    }
+    
     
     
     return (
