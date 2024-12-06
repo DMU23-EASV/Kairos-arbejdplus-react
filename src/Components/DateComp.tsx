@@ -6,7 +6,7 @@ import { DatePicker } from '@mui/x-date-pickers/DatePicker';
 
 interface DateCompProps{
     title: string;
-    value?: Dayjs | null;
+    value?: Dayjs;
     onDateChange: (value: Dayjs | null) => void;
 }
 
