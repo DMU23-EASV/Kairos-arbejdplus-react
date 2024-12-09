@@ -5,21 +5,40 @@ import BottomNavigationComp from "./Components/BottomNavigationComp.tsx";
 import TopNavigationComp from "./Components/TopNavigationComp.tsx";
 import LoginComp from "./Components/LoginComp.tsx";
 import TimeComp from "./Components/TimeComp.tsx";
-import React from "react";
+import React, { useContext, useEffect, useState } from "react";
 import HistoryComp from "./Components/History.tsx";
+import { TaskListProvider } from './TaskListContext.tsx';
+import { TaskModel } from './Models/TaskModel.ts';
 
 function App() {
     return (
         <AuthProvider>
-            <Router>
-                <Main />
-            </Router>
+            <TaskListProvider>
+                <Router>
+                    <Main />
+                </Router>
+            </TaskListProvider>
         </AuthProvider>
     );
 }
 
 const Main: React.FC = () => {
     const { isLoggedIn, login, logout } = useAuth();
+    const [isAuthChecked, setIsAuthChecked] = useState(false);
+
+    // Wait until authentication status is checked
+    useEffect(() => {
+        // Assuming `isLoggedIn` can change asynchronously
+        if (isLoggedIn !== undefined) {
+            setIsAuthChecked(true);
+        }
+    }, [isLoggedIn]);
+
+    // If authentication status hasn't been checked yet, show loading state
+    if (!isAuthChecked) {
+        return <div>Loading...</div>;
+    }
+
 
     return (
         <div>
@@ -38,8 +57,7 @@ const Main: React.FC = () => {
                         <Route path="/history" element={<HistoryComp />} />
                         <Route path="/notifications" element={<h1 style={{color: 'black'}}>Notifications Page</h1>} />
                     </Routes>
-                    <BottomNavigationComp />
-                    
+                    <BottomNavigationComp />       
                 </>
             ) : (
                 <LoginComp onLogin={login} />
