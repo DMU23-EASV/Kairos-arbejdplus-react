@@ -14,13 +14,18 @@ import {TimePeriodRules} from "../Services/ValidationRules/TimePeriodRules.ts";
 import {DistanceRules} from "../Services/ValidationRules/DistanceRules.ts";
 import {ETaskStatus} from "../Enum/ETaskStatus.ts";
 import {EErrorMessages} from "../Enum/EErrorMessages.ts";
+import {UtilityDateTime} from "../Services/UtilityDateTime.ts";
 
 
 function MainRegComp() {
 
     // Reference to a hidden Link element for program navigation to "/history"
     const linkRefHistory = useRef<HTMLAnchorElement>(null);
-    
+
+
+    /**
+     * Function for changing view to /history
+     */
     function changeViewToHistory(): void {
         // Navigates user to "/history" if linkRefHistory isn't null
         if (linkRefHistory.current) {
@@ -44,6 +49,7 @@ function MainRegComp() {
     const [errorEndTime, setErrorEndTime] = useState<string>("");
     const [errorEndKm, setErrorEndKm] = useState<string>("");
 
+    // Object mapping input field names to their values and error handlers
     const requiredData: { [key: string]: [string, React.Dispatch<React.SetStateAction<string>>] } = {
         startTime: [startTime, setErrorStartTime],
         startKm: [startKm, setErrorStartKm],
@@ -106,17 +112,22 @@ function MainRegComp() {
         setRemark(newRemark);
         console.log(newRemark);
     };
-    
 
-    // This function switches the view to history without performing any database save operation
+
+    /**
+     * This function handles the case where user clicks the "Annuller" button and 
+     * switches the view to history without performing any database save operation
+     */
     function handleAnnullerClick(): void {
         console.log("Annuller...")
         changeViewToHistory();
     }
 
 
-    
-
+    /**
+     * Handles the case where the user clicks the "Gem som kladde" button.
+     * The behavior of the action varies depending on how many fields are filled out
+     */
     function handleSaveClick(): void {
 
         const taskStatus:ETaskStatus = ETaskStatus.Draft;
@@ -137,6 +148,15 @@ function MainRegComp() {
     }
 
 
+    /**
+     * This function handles the case where some of the fields are filled out.
+     * It checks if both start- and end time is filled out and validates the time inputs if so.
+     * It checks if both start- and end km is filled out and validates the km inputs if so.
+     *
+     * If the inputs are valid, a task object is created and sent to the database.
+     * If the inputs are invalid, an error message is generated.
+     * @param taskStatus The status of the task to be created (e.g., Draft, AwaitingApproval).
+     */
     function handleIfSomeFieldsAreFilledOut(taskStatus: ETaskStatus) {
         
         let timeIsValid: boolean = true;
@@ -181,21 +201,31 @@ function MainRegComp() {
         }
         
     }
-    
-    
+
+
+    /**
+     * Sets the error messages for both the start and end time fields
+     * @param errorMessage The error message to be displayed
+     */
     function setTimePeriodError(errorMessage:string){
         setErrorStartTime(errorMessage);
         setErrorEndTime(errorMessage)
     }
-    
-    
+
+    /**
+     * Sets the error messages for both the start and end km fields
+     * @param errorMessage The error message to be displayed
+     */
     function setDistanceError(errorMessage:string){
         setErrorStartKm(errorMessage);
         setErrorEndKm(errorMessage);
     }
-    
-    
 
+    
+    /**
+     * Handles the case where the user clicks the "Send" button.
+     * The behavior of the action varies depending on how many fields are filled out.
+     */
     function handleSendClick(): void {
         console.log("handle send")
         const taskStatus:ETaskStatus = ETaskStatus.AwaitingApproval;
@@ -216,10 +246,12 @@ function MainRegComp() {
             setErrorMessagesEmptyFields();
         }
     }
-    
-    
-    
-    
+
+
+    /**
+     * Checks if all fields are empty 
+     * @return true if all fields are empty - false if not 
+     */
     function isAllFieldsEmpty(): boolean {
         if (date === undefined && startTime === "" && startKm === "" && endTime === "" && endKm === ""){
             return true;
@@ -228,7 +260,12 @@ function MainRegComp() {
             return false;
         }
     }
-    
+
+
+    /**
+     * Checks if all fields are filled out
+     * @return true if all fields are filled out - false if not
+     */
     function isAllFieldsFilledOut(): boolean {
 
         if (date !== undefined && startTime !== "" && startKm !== "" && endTime !== "" && endKm !== ""){
@@ -237,12 +274,24 @@ function MainRegComp() {
             return false;
         }
     }
-    
+
+
+    /**
+     * Handles the case where all fields are empty by navigating to the /history view.
+     */
     function handleIfAllFieldsIsEmpty(): void {
         console.log("All empty...")
         changeViewToHistory();
     }
-    
+
+
+    /**
+     * This function handles the case where all fields are filled out.
+     * It validates both start- and end time inputs, and start- and end km inputs.
+     * If the inputs are valid, a task object is created and sent to the database.
+     * If the inputs are invalid error messages are generated.
+     * @param taskStatus The status of the task to be created (e.g., Draft, AwaitingApproval).
+     */
     function handleIfAllFieldsAreFilledOut(taskStatus:ETaskStatus): void {
         const timeIsValid = validateTimePeriod(startTime, endTime);
         const kmIsValid = validateKmDistance(startKm, endKm);
@@ -255,13 +304,23 @@ function MainRegComp() {
 
         } else {
             console.log("Not valid data")
+            
+            if (!timeIsValid){
+                setTimePeriodError(EErrorMessages.StartTimeBeforeEndTime);
+            }
+            
+            if (!kmIsValid) {
+                setDistanceError(EErrorMessages.StartKmBeforeEndKm)
+            }
         }
     }
-    
-    
-    
-    
-    
+
+
+    /**
+     * This function iterates through all the fields in the UI and sets error messages based on 
+     * if the fields are filled out or not.
+     * For each empty field a "Required" message is displayed.
+     */
     function setErrorMessagesEmptyFields(): void {
 
         if (!date) {
@@ -281,6 +340,12 @@ function MainRegComp() {
     }
 
 
+    /**
+     * Validates a given time period
+     * @param timeStart The start time
+     * @param timeEnd The end time
+     * @return true if valid time period - false if not
+     */
     function validateTimePeriod(timeStart:string, timeEnd:string): boolean {
         let isValid:boolean;
 
@@ -297,6 +362,12 @@ function MainRegComp() {
     }
 
 
+    /**
+     * Validates a given km distance
+     * @param kmStart The start km
+     * @param kmEnd The end km
+     * @return true if valid km distance - false if not
+     */
     function validateKmDistance(kmStart:string, kmEnd:string): boolean {
         let isValid;
         
@@ -310,8 +381,13 @@ function MainRegComp() {
         }
         return isValid;
     }
-    
 
+
+    /**
+     * This function creates a task object based on the filled-out fields and a given task status.
+     * @param taskStatus The status of the task to be created (e.g., Draft, AwaitingApproval).
+     * @return a created task object
+     */
     function createTaskObj(taskStatus:ETaskStatus):TaskModel {
 
         // Task object to save in database
@@ -319,9 +395,9 @@ function MainRegComp() {
         
         taskObj.owner = sessionStorage.getItem("username")!.toString();
         taskObj.selecteDate = date?.toDate();
-        taskObj.startTime = convertToDateType(date.toDate(), startTime);
+        taskObj.startTime = UtilityDateTime.convertTimeStringToDateType(date.toDate(), startTime);
         taskObj.startKm = parseInt(startKm);
-        taskObj.endTime = convertToDateType(date.toDate(), endTime); 
+        taskObj.endTime = UtilityDateTime.convertTimeStringToDateType(date.toDate(), endTime); 
         taskObj.endKm = parseInt(endKm);
         taskObj.remark = remark;
         taskObj.modelStatus = taskStatus;
@@ -330,19 +406,10 @@ function MainRegComp() {
     }
 
 
-    function convertToDateType(date:Date, time:string):Date {
-
-        const [hours, minutes] = time.split(":").map(Number);
-
-        const newDate = new Date(date); 
-        newDate.setHours(hours, minutes, 0, 0); 
-        
-
-        return newDate;
-
-    }
-
-
+    /**
+     * 
+     * @param taskObj The created task object to be sent to the database
+     */
     function sendToDatabase(taskObj:TaskModel): void {
         console.log(taskObj);
         console.log("Send to database...");
