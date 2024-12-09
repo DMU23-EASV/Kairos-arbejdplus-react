@@ -2,6 +2,7 @@ import TextField from '@mui/material/TextField';
 import InputAdornment from "@mui/material/InputAdornment";
 import { IconButton } from "@mui/material";
 import AccessTimeSharpIcon from '@mui/icons-material/AccessTimeSharp';
+import {UtilityDateTime} from "../Services/UtilityDateTime.ts";
 
 interface TimeCompProps {
     title: string;
@@ -20,7 +21,7 @@ const TimeComp: React.FC<TimeCompProps> = ({ title, value, errorMessage, onTimeC
 
     const setCurrentTime = () => {
         const time = new Date();
-        const formattedTime = `${time.getHours().toString().padStart(2, '0')}:${time.getMinutes().toString().padStart(2, '0')}`;
+        const formattedTime = UtilityDateTime.convertDateTimeToStringTime(time);
         onTimeChange(formattedTime);
     };
     

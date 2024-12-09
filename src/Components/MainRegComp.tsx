@@ -15,6 +15,7 @@ import {DistanceRules} from "../Services/ValidationRules/DistanceRules.ts";
 import {ETaskStatus} from "../Enum/ETaskStatus.ts";
 import {EErrorMessages} from "../Enum/EErrorMessages.ts";
 import {UtilityDateTime} from "../Services/UtilityDateTime.ts";
+import {UtilityKm} from "../Services/UtilityKm.ts";
 
 
 function MainRegComp() {
@@ -113,6 +114,21 @@ function MainRegComp() {
         console.log(newRemark);
     };
 
+    
+    function loadTaskObject(excTaskObj:TaskModel): void{
+        
+        setDate(UtilityDateTime.convertDateToDayjsType(excTaskObj.selecteDate));
+        setStartTime(UtilityDateTime.convertDateTimeToStringTime(excTaskObj.startTime));
+        setStartKm(UtilityKm.kmToString(excTaskObj.startKm));  
+        setEndTime(UtilityDateTime.convertDateTimeToStringTime(excTaskObj.endTime));
+        setEndKm(UtilityKm.kmToString(excTaskObj.endKm));
+        setRemark(excTaskObj.remark ?? "");
+        
+        console.log("task object loaded..")
+    }
+    
+    
+    
 
     /**
      * This function handles the case where user clicks the "Annuller" button and 
