@@ -6,6 +6,8 @@ import TopNavigationComp from "./Components/TopNavigationComp.tsx";
 import LoginComp from "./Components/LoginComp.tsx";
 import TimeComp from "./Components/TimeComp.tsx";
 import React from "react";
+import Usersettings from "./Components/UserSettingsComp.tsx";
+import {User} from "./Models/User.ts";
 
 function App() {
     return (
@@ -27,6 +29,11 @@ const Main: React.FC = () => {
                     <TopNavigationComp isLoggedIn={isLoggedIn} onLogout={logout} />
                     <Routes>
                         <Route path="/" element={<h1 style={{color: 'black'}}>Body Goes Here</h1>} />
+
+                        <Route path="/settings" element={
+                            <Usersettings user={new User()}/>
+                        } />
+
                         <Route path="/tasks" element={
                             <div> 
                                 <TimeComp 
@@ -36,6 +43,7 @@ const Main: React.FC = () => {
                         } />
                         <Route path="/history" element={<h1 style={{color: 'black'}}>History Page</h1>} />
                         <Route path="/notifications" element={<h1 style={{color: 'black'}}>Notifications Page</h1>} />
+
                     </Routes>
                     <BottomNavigationComp />
                     

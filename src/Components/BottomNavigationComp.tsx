@@ -4,6 +4,7 @@ import { Link } from "react-router-dom"
 import AssignmentIcon from '@mui/icons-material/Assignment';
 import HistoryIcon from '@mui/icons-material/History';
 import NotificationsIcon from '@mui/icons-material/Notifications';
+import {Settings} from "@mui/icons-material";
 
 const BottomNavigationComp: React.FC = () => {
     const [value, setValue] = React.useState(0);
@@ -55,6 +56,12 @@ const BottomNavigationComp: React.FC = () => {
                         icon={<NotificationsIcon style={{ color: "white" }} />}
                         component={Link}
                         to="/notifications"
+                    />
+                    <BottomNavigationAction
+                        label="Settings"
+                        icon={<Settings style={{ color: "white" }} />}
+                        component={Link}
+                        to="/settings"
                     />
                 </BottomNavigation>
             </Paper>
