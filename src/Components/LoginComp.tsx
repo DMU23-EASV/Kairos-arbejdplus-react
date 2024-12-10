@@ -4,6 +4,8 @@ import {APP_NAME, LOGIN_ENDPOINT} from "../Constants.ts";
 import {useNavigate} from "react-router-dom";
 import './LoginComp.css'
 import {useState} from "react";
+import { getTasks } from '../Services/TaskService.ts';
+import TaskListContext from '../TaskListContext.tsx';
 
 interface LoginCompProps {
     onLogin: (username: string, password: string) => void; 
@@ -28,7 +30,6 @@ export default function LoginComp({ onLogin }: LoginCompProps) {
                         password: password
             }),
             });
-            console.log("After fetch")
             
             if (response.status === 401) {
                 alert('Unauthorized: Invalid username or password.');
@@ -40,8 +41,26 @@ export default function LoginComp({ onLogin }: LoginCompProps) {
                 alert(`Error: ${errorMessage || 'Something went wrong'}`);
                 return;
             }
+            sessionStorage.setItem('username', username);
+
+            console.log(`UserName??? ${username}`)
             
             onLogin(username, password);
+
+
+            if (username) {
+                try {
+
+                    const response = await getTasks({username});
+
+                    TaskListContext.Provider(response);
+                } catch (error) {
+                    console.error("UseEffect : GetTasks Context ", error);
+                }
+            } else {
+                console.error("Username is not available in sessionStorage.");
+            }
+
             
             navigate("/tasks");
             

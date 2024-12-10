@@ -1,11 +1,10 @@
 import { TaskModel } from "../Models/TaskModel";
 import { getData, putData, postData, deleteData } from "./ApiService"; 
 
-const username = sessionStorage.getItem("username")?.toString();
 
-export const getTasks = async (): Promise<TaskModel[]> => {
+export const getTasks = async ({ username }: { username: string }): Promise<TaskModel[]> => {
     try {
-        const response = await getData<TaskModel[]>(`/api/taskbyusername/${username}`)
+        const response = await getData<TaskModel[]>(`api/taskbyusername/${username}`)
         
         //TODO: Remove debug!
         console.log("Message and status " + response.message + response.status)

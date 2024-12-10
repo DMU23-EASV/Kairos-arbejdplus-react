@@ -13,11 +13,9 @@ import { TaskModel } from './Models/TaskModel.ts';
 function App() {
     return (
         <AuthProvider>
-            <TaskListProvider>
                 <Router>
                     <Main />
                 </Router>
-            </TaskListProvider>
         </AuthProvider>
     );
 }
@@ -28,6 +26,7 @@ const Main: React.FC = () => {
 
     // Wait until authentication status is checked
     useEffect(() => {
+        console.log("isLoggedIn:", isLoggedIn); // Log the value of isLoggedIn
         // Assuming `isLoggedIn` can change asynchronously
         if (isLoggedIn !== undefined) {
             setIsAuthChecked(true);
@@ -36,7 +35,7 @@ const Main: React.FC = () => {
 
     // If authentication status hasn't been checked yet, show loading state
     if (!isAuthChecked) {
-        return <div>Loading...</div>;
+        return <div><h1>Loading...</h1></div>;
     }
 
 

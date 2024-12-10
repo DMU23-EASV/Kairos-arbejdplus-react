@@ -24,7 +24,8 @@ export const getData = async <T>(endpoint: string): Promise<ApiResponse<T>> => {
       headers,
     });
     if (!response.ok) {
-      throw new Error(`HTTP error! status: ${response.status}`);
+      console.error(`HTTP Error ::: URL ${BASE_URL} | ENDPOINT ${endpoint}`)
+      throw new Error(`HTTP Error Code: ${response.status}`);
     }
     const data: T = await response.json();
     return { data, status: response.status, message: 'Success' };
@@ -43,7 +44,8 @@ export const postData = async <T>(endpoint: string, data: T): Promise<ApiRespons
       body: JSON.stringify(data),
     });
     if (!response.ok) {
-      throw new Error(`HTTP error! status: ${response.status}`);
+      console.error(`HTTP Error ::: URL ${BASE_URL} | ENDPOINT ${endpoint}`)
+      throw new Error(`HTTP Error Code: ${response.status}`);
     }
     const responseData: T = await response.json();
     return { data: responseData, status: response.status, message: 'Data posted successfully' };
@@ -62,7 +64,8 @@ export const putData = async <T>(endpoint: string, data: T): Promise<ApiResponse
       body: JSON.stringify(data),
     });
     if (!response.ok) {
-      throw new Error(`HTTP error! status: ${response.status}`);
+      console.error(`HTTP Error ::: URL ${BASE_URL} | ENDPOINT ${endpoint}`)
+      throw new Error(`HTTP Error Code: ${response.status}`);
     }
     const responseData: T = await response.json();
     return { data: responseData, status: response.status, message: 'Data updated successfully' };
@@ -80,6 +83,7 @@ export const deleteData = async (endpoint: string): Promise<ApiResponse<null>> =
       headers,
     });
     if (!response.ok) {
+      console.error(`HTTP Error ::: URL ${BASE_URL} | ENDPOINT ${endpoint}`)
       throw new Error(`HTTP error! status: ${response.status}`);
     }
     return { data: null, status: response.status, message: 'Data deleted successfully' };
