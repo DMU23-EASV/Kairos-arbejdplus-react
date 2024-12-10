@@ -5,7 +5,7 @@ import {useNavigate} from "react-router-dom";
 import './LoginComp.css'
 import {useState} from "react";
 import { getTasks } from '../Services/TaskService.ts';
-import TaskListContext from '../TaskListContext.tsx';
+import TaskListContext from '../TaskContext.tsx';
 
 interface LoginCompProps {
     onLogin: (username: string, password: string) => void; 
@@ -46,21 +46,6 @@ export default function LoginComp({ onLogin }: LoginCompProps) {
             console.log(`UserName??? ${username}`)
             
             onLogin(username, password);
-
-
-            if (username) {
-                try {
-
-                    const response = await getTasks({username});
-
-                    TaskListContext.Provider(response);
-                } catch (error) {
-                    console.error("UseEffect : GetTasks Context ", error);
-                }
-            } else {
-                console.error("Username is not available in sessionStorage.");
-            }
-
             
             navigate("/tasks");
             

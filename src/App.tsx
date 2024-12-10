@@ -7,7 +7,7 @@ import LoginComp from "./Components/LoginComp.tsx";
 import TimeComp from "./Components/TimeComp.tsx";
 import React, { useContext, useEffect, useState } from "react";
 import HistoryComp from "./Components/History.tsx";
-import { TaskListProvider } from './TaskListContext.tsx';
+import { TaskProvider } from './TaskContext.tsx';
 import { TaskModel } from './Models/TaskModel.ts';
 
 function App() {
@@ -43,20 +43,22 @@ const Main: React.FC = () => {
         <div>
             {isLoggedIn ? (
                 <>
-                    <TopNavigationComp isLoggedIn={isLoggedIn} onLogout={logout} />
-                    <Routes>
-                        <Route path="/" element={<h1 style={{color: 'black'}}>Body Goes Here</h1>} />
-                        <Route path="/tasks" element={
-                            <div> 
-                                <TimeComp 
-                                    title={"Start tid"} />
-                                <TimeComp title={"Slut tid"} />
-                            </div>
-                        } />
-                        <Route path="/history" element={<HistoryComp />} />
-                        <Route path="/notifications" element={<h1 style={{color: 'black'}}>Notifications Page</h1>} />
-                    </Routes>
-                    <BottomNavigationComp />       
+                    <TaskProvider>
+                        <TopNavigationComp isLoggedIn={isLoggedIn} onLogout={logout} />
+                        <Routes>
+                            <Route path="/" element={<h1 style={{color: 'black'}}>Body Goes Here</h1>} />
+                            <Route path="/tasks" element={
+                                <div> 
+                                    <TimeComp 
+                                        title={"Start tid"} />
+                                    <TimeComp title={"Slut tid"} />
+                                </div>
+                            } />
+                            <Route path="/history" element={<HistoryComp />} />
+                            <Route path="/notifications" element={<h1 style={{color: 'black'}}>Notifications Page</h1>} />
+                        </Routes>
+                        <BottomNavigationComp /> 
+                    </TaskProvider>      
                 </>
             ) : (
                 <LoginComp onLogin={login} />

@@ -1,42 +1,34 @@
 import React, { useContext } from "react";
 import "../index.css"
 import TaskCardComp from "./TaskCardComp";
-import TaskListContext from "../TaskListContext";
 import { TaskModel } from "../Models/TaskModel";
+import TaskContext from "../TaskContext";
+import { ETaskStatus } from "../Enum/ETaskStatus";
+import { getTasks } from "../Services/TaskService";
 
 const History = () => {
-  
-    const taskApproved = {
-        title: "Godkendt",
-        undertitle: "04 / 12 / 2024",
-        status: "Approved", 
-        km: 100,
-        totaltime: 10
-      };
-    
-      const taskDraft = {
-        title: "Klade",
-        undertitle: "04 / 12 / 2024",
-        status: "Draft", 
-        km: 100,
-        totaltime: 10
-      };
 
-      const taskRejected = {
-        title: "Afvist",
-        undertitle: "04 / 12 / 2024",
-        status: "Rejected", 
-        km: 100,
-        totaltime: 10
-      }
+  const Context = useContext(TaskContext)
 
-      const taskWaiting = {
-        title: "Afventer Godkendelse",
-        undertitle: "04 / 12 / 2024",
-        status: "AwaitingApproval", 
-        km: 100,
-        totaltime: 10
-      };
+
+        function clickHandler(){
+
+          Context?.setTask(getTasks)
+
+
+
+          /*
+            console.log(Context?.tasks)
+
+            let t = new TaskModel(); 
+            t.comment="GG"
+            t.modelStatus = ETaskStatus.AwaitingApproval
+
+            Context?.addTask(t); 
+            */
+
+
+        } 
 
       //margin for our task cards
       const marginTopValue = "10px"
@@ -44,8 +36,13 @@ const History = () => {
 
 
       //List of tasks to display or not display if empty.
-      const listOfTask = useContext(TaskListContext);
 
+      let listOfTask = Context?.tasks
+
+      if (listOfTask == undefined)
+      {
+        listOfTask = []
+      }
 
       console.log({ listOfTask })
 
@@ -60,35 +57,38 @@ const History = () => {
         totaltime: 0
       };
 
-      // Filter tasks by status
+      
+              // Filter tasks by status
       const DraftTasks = listOfTask
-      .filter((task) => task.status === "Draft")
+      .filter((task) => task.modelStatus == ETaskStatus.Draft)
       .map((task, index) => <TaskCardComp key={index} task={task} marginTop={marginTopValue} marginBottom={marginBottomValue} />);
 
       const awaitapprovedTasks = listOfTask
-      .filter((task) => task.status === "AwaitingApproval")
+      .filter((task) => task.modelStatus == ETaskStatus.AwaitingApproval)
       .map((task, index) => <TaskCardComp key={index} task={task} marginTop={marginTopValue} marginBottom={marginBottomValue} />);
 
       const approvedTasks = listOfTask
-      .filter((task) => task.status === "Approved")
+      .filter((task) => task.modelStatus == ETaskStatus.Approved)
       .map((task, index) => <TaskCardComp key={index} task={task} marginTop={marginTopValue} marginBottom={marginBottomValue} />);
 
       const rejectedTasks = listOfTask
-      .filter((task) => task.status === "Rejected")
+      .filter((task) => task.modelStatus === ETaskStatus.Rejected)
       .map((task, index) => <TaskCardComp key={index} task={task} marginTop={marginTopValue} marginBottom={marginBottomValue} />);
 
       // Check if there are no tasks at all
       const noTasks = listOfTask.length === 0;
-
+  
+    
       // Check if all history lists are empty
       const noHistoryTasks =
       awaitapprovedTasks.length === 0 &&
       approvedTasks.length === 0 &&
       rejectedTasks.length === 0;
+     
 
     return (
       <div style={{ marginTop: '50px', marginBottom: '50px' }}>
-        <h2 align="left">Aktuelle</h2>
+        <h2 align="left" onClick={clickHandler}>Aktuelle</h2>
         <TaskCardComp task={taskCreateNew} marginTop={marginTopValue} marginBottom={marginBottomValue}/>
         {noTasks ? (
         <p>Du har ingen registreringer endnu.<br />Opret en ny tidsregistrering for at komme i gang.</p>
