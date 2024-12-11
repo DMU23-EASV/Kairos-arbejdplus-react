@@ -27,6 +27,9 @@ export const TaskProvider : React.FC<{children : ReactNode}> = ({children}) =>{
     }
     
     const setTask = (newTasks: TaskModel[]) => {
+
+        console.log(newTasks);
+
         setTasks(newTasks);
         console.log("Tasks updated!");
     };

@@ -21,6 +21,7 @@ export const getData = async <T>(endpoint: string): Promise<T> => {
   try {
     const response = await fetch(`${BASE_URL}/${endpoint}`, {
       method: 'GET',
+      credentials: 'include',
       headers,
     });
     if (!response.ok) {
@@ -42,6 +43,7 @@ export const postData = async <T>(endpoint: string, data: T): Promise<ApiRespons
     const response = await fetch(`${BASE_URL}/${endpoint}`, {
       method: 'POST',
       headers,
+      credentials: 'include',
       body: JSON.stringify(data),
     });
     if (!response.ok) {
@@ -62,6 +64,7 @@ export const putData = async <T>(endpoint: string, data: T): Promise<ApiResponse
     const response = await fetch(`${BASE_URL}/${endpoint}`, {
       method: 'PUT',
       headers,
+      credentials: 'include',
       body: JSON.stringify(data),
     });
     if (!response.ok) {
@@ -82,6 +85,7 @@ export const deleteData = async (endpoint: string): Promise<ApiResponse<null>> =
     const response = await fetch(`${BASE_URL}/${endpoint}`, {
       method: 'DELETE',
       headers,
+      credentials: 'include',
     });
     if (!response.ok) {
       console.error(`HTTP Error ::: URL ${BASE_URL} | ENDPOINT ${endpoint}`)

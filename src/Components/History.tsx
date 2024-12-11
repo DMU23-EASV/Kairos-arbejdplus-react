@@ -16,18 +16,26 @@ const History = () => {
   const [loading, setLoading] = useState(true); // Track loading state
 
   // Fetch tasks
-  const fetchTasks = async () => {
-    if (username && Context) {
-      try {
-        const tasks = await getTasks({ username });
-        Context.setTask(tasks); // Update context with fetched tasks
-      } catch (error) {
-        console.error("Failed to fetch tasks:", error);
-      } finally {
-        setLoading(false); // Stop loading spinner
-      }
-    }
-  };
+
+    const fetchTasks = async () => {
+        setLoading(true);
+        if (username && Context) {
+            try {
+                const tasks = await getTasks({ username });
+
+                console.log("PRINTING TASKS FROM HISTORY VIEW");
+                console.log(tasks);
+
+
+
+                Context.setTask(tasks); // Update context with fetched tasks
+            } catch (error) {
+                console.error("Failed to fetch tasks:", error);
+            } finally {
+                setLoading(false);
+            }
+        }
+    };
 
   useEffect(() => {
     fetchTasks(); // Call fetchTasks on component mount
