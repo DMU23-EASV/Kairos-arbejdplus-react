@@ -5,6 +5,8 @@ import { Box } from "@mui/material";
 import Typography from '@mui/material/Typography';
 import CardMedia from '@mui/material/CardMedia';
 import IconButton from '@mui/material/IconButton';
+import { ETaskStatus } from "../Enum/ETaskStatus"; 
+import { TaskModel } from "../Models/TaskModel";
  
 //Draft
 import AddCircleOutlineOutlinedIcon from '@mui/icons-material/AddCircleOutlineOutlined';
@@ -15,10 +17,27 @@ import HelpOutlineOutlinedIcon from '@mui/icons-material/HelpOutlineOutlined';
 //Rejected
 import NotInterestedOutlinedIcon from '@mui/icons-material/NotInterestedOutlined';
 
-const TaskCardComp = ({ task, marginTop = '0px', marginBottom = '0px' }) => {
-    const { status, title , undertitle, km, totaltime} = task;
+const TaskCardComp = ({ task, marginTop = '0px', marginBottom = '0px', specialTask = null }) => {
+
     const iconProps = { height: 35, width: 35 };
     const imageProps = { width: 95, height: 95 };
+
+    const { 
+        modelStatus,  
+        startKilometers, 
+        endKilometers,
+        startTime,
+        endTime,
+        selectedDate} = task;
+
+    const currentTask = specialTask || task;
+
+    const TitleTranslator = {
+        [ETaskStatus.Draft]: "Udkast",
+        [ETaskStatus.AwaitingApproval]: "Afventer",
+        [ETaskStatus.Rejected]: "Afvist",
+        [ETaskStatus.Approved]: "Godkendt",
+    };
 
     //Default values
     let image = "/Draft.png"
@@ -28,19 +47,19 @@ const TaskCardComp = ({ task, marginTop = '0px', marginBottom = '0px' }) => {
     let opacityStyle = 1; 
 
     //Status Cases
-    if (status === "AwaitingApproval") {
+    if (modelStatus == ETaskStatus.AwaitingApproval) {
         image = "/AwaitingApproval.png"
         icon = <HelpOutlineOutlinedIcon sx={{ ...iconProps }} />;
-    } else if (status === "Approved") {
+    } else if (modelStatus == ETaskStatus.Approved) {
         image = "/Approved.png"
         icon = <CheckCircleOutlinedIcon sx={{ ...iconProps }} />;
-    } else if (status === "Rejected") {
+    } else if (modelStatus == ETaskStatus.Rejected) {
         image = "/Rejected.png"
         icon = <NotInterestedOutlinedIcon sx={{ ...iconProps }} />;
         isDisabled = true;
         cursorStyle = "not-allowed";
         opacityStyle = 0.5; 
-    } else if (status === "Draft") {
+    } else if (modelStatus == ETaskStatus.Draft) {
         image = "/Draft.png"
         icon = <AddCircleOutlineOutlinedIcon sx={{ ...iconProps }} />;
     }
@@ -53,24 +72,45 @@ const TaskCardComp = ({ task, marginTop = '0px', marginBottom = '0px' }) => {
           </IconButton>
           <Box sx={{ display: 'flex', flexDirection: 'column' }}>
             <CardContent sx={{ flex: '1 0 auto', width: 220}}>
-                <Typography variant="h6"
-                sx={{ textAlign: 'left' }}
-                >
-                    {title}
+                <Typography variant="h6" sx={{ textAlign: 'left' }}>
+                    {specialTask ? specialTask.title : TitleTranslator[modelStatus]}
+                    {!specialTask && (<>
+                        : {new Date(startTime).getDay()} / 
+                        {new Date(startTime).getMonth() + 1} / 
+                        {new Date(startTime).getUTCFullYear()}
+                    </>)}
                 </Typography>
+                
+
+                <Typography variant="subtitle1" component="div" sx={{ color: 'text.secondary', textAlign: 'left' }}>
+                    {specialTask ? (
+                        specialTask.undertitle
+                    ) : (
+                        <>
+                            {new Date(startTime).getDay()} / 
+                            {new Date(startTime).getMonth() + 1} / 
+                            {new Date(startTime).getUTCFullYear()}
+                        </>
+                    )}
+                </Typography>
+
+                {startKilometers !== undefined && endKilometers !== undefined && startTime !== undefined && endTime !== undefined && (
                 <Typography
-                variant="subtitle1"
-                component="div"
-                sx={{ color: 'text.secondary', textAlign: 'left' }}
+                    variant="subtitle1"
+                    component="div"
+                    sx={{ color: 'text.secondary', textAlign: 'left' }}
                 >
-                    {undertitle}
-                </Typography>
-                {km > 0 && totaltime > 0 && (<Typography
-                variant="subtitle1"
-                component="div"
-                sx={{ color: 'text.secondary', textAlign: 'left' }}
-                >
-                   Total Tid: {totaltime} / Km: {km}
+                    {/* Calculate the total time in milliseconds */}
+                    {(() => {
+                    const timeDifference = new Date(endTime).getTime() - new Date(startTime).getTime();
+                    const totalMinutes = timeDifference / (1000 * 60);
+                    const hours = Math.floor(totalMinutes / 60); // Hours
+                    const minutes = Math.floor(totalMinutes % 60); // Remaining minutes
+                    return `${hours}T ${minutes}M`; // Format as hours and minutes
+                    })()}
+
+                    {/* Display the total kilometers, rounded to 2 decimal places */}
+                    / Total Km: {(endKilometers - startKilometers).toFixed(2)}
                 </Typography>
                 )}
             </CardContent>

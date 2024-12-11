@@ -17,18 +17,19 @@ export interface ApiResponse<T> {
 }
 
 // Function for making GET requests
-export const getData = async <T>(endpoint: string): Promise<ApiResponse<T>> => {
+export const getData = async <T>(endpoint: string): Promise<T> => {
   try {
     const response = await fetch(`${BASE_URL}/${endpoint}`, {
       method: 'GET',
       headers,
     });
     if (!response.ok) {
-      console.error(`HTTP Error ::: URL ${BASE_URL} | ENDPOINT ${endpoint}`)
+      console.error(`HTTP Error ::: URL ${BASE_URL} | ENDPOINT ${endpoint}`);
       throw new Error(`HTTP Error Code: ${response.status}`);
     }
     const data: T = await response.json();
-    return { data, status: response.status, message: 'Success' };
+    console.log("WAT UP " + data)
+    return data; // Only return the raw data (task list)
   } catch (error) {
     console.error("Error fetching data:", error);
     throw error;

@@ -1,34 +1,38 @@
-import React, { useContext } from "react";
+import React, { useContext, useEffect, useState } from "react";
 import "../index.css"
 import TaskCardComp from "./TaskCardComp";
 import { TaskModel } from "../Models/TaskModel";
 import TaskContext from "../TaskContext";
 import { ETaskStatus } from "../Enum/ETaskStatus";
 import { getTasks } from "../Services/TaskService";
+import { Task } from "@mui/icons-material";
 
 const History = () => {
 
   const Context = useContext(TaskContext)
 
+  const username = sessionStorage.getItem("username")
+  
+  const [loading, setLoading] = useState(true); // Track loading state
 
-        function clickHandler(){
+  // Fetch tasks
+  const fetchTasks = async () => {
+    if (username && Context) {
+      try {
+        const tasks = await getTasks({ username });
+        Context.setTask(tasks); // Update context with fetched tasks
+      } catch (error) {
+        console.error("Failed to fetch tasks:", error);
+      } finally {
+        setLoading(false); // Stop loading spinner
+      }
+    }
+  };
 
-          Context?.setTask(getTasks)
+  useEffect(() => {
+    fetchTasks(); // Call fetchTasks on component mount
+  }, [username]); 
 
-
-
-          /*
-            console.log(Context?.tasks)
-
-            let t = new TaskModel(); 
-            t.comment="GG"
-            t.modelStatus = ETaskStatus.AwaitingApproval
-
-            Context?.addTask(t); 
-            */
-
-
-        } 
 
       //margin for our task cards
       const marginTopValue = "10px"
@@ -37,12 +41,8 @@ const History = () => {
 
       //List of tasks to display or not display if empty.
 
-      let listOfTask = Context?.tasks
-
-      if (listOfTask == undefined)
-      {
-        listOfTask = []
-      }
+      // List of tasks
+      const listOfTask = Context?.tasks ?? [];
 
       console.log({ listOfTask })
 
@@ -58,7 +58,7 @@ const History = () => {
       };
 
       
-              // Filter tasks by status
+      // Filter tasks by status
       const DraftTasks = listOfTask
       .filter((task) => task.modelStatus == ETaskStatus.Draft)
       .map((task, index) => <TaskCardComp key={index} task={task} marginTop={marginTopValue} marginBottom={marginBottomValue} />);
@@ -88,8 +88,8 @@ const History = () => {
 
     return (
       <div style={{ marginTop: '50px', marginBottom: '50px' }}>
-        <h2 align="left" onClick={clickHandler}>Aktuelle</h2>
-        <TaskCardComp task={taskCreateNew} marginTop={marginTopValue} marginBottom={marginBottomValue}/>
+        <h2 align="left">Aktuelle</h2>
+        <TaskCardComp task={Task} marginTop={marginTopValue} marginBottom={marginBottomValue} specialTask={taskCreateNew}/>
         {noTasks ? (
         <p>Du har ingen registreringer endnu.<br />Opret en ny tidsregistrering for at komme i gang.</p>
       ) : (
