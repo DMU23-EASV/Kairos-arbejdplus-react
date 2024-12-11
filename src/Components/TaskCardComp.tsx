@@ -106,11 +106,11 @@ const TaskCardComp = ({ task, marginTop = '0px', marginBottom = '0px', specialTa
                     const totalMinutes = timeDifference / (1000 * 60);
                     const hours = Math.floor(totalMinutes / 60); // Hours
                     const minutes = Math.floor(totalMinutes % 60); // Remaining minutes
-                    return `${hours}T ${minutes}M`; // Format as hours and minutes
+                    return `Tid: ${hours}T ${minutes}M`; // Format as hours and minutes
                     })()}
 
                     {/* Display the total kilometers, rounded to 2 decimal places */}
-                    / Total Km: {(endKilometers - startKilometers).toFixed(2)}
+                    / Km: {(endKilometers - startKilometers).toFixed(2)}
                 </Typography>
                 )}
             </CardContent>
