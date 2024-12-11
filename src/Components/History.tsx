@@ -1,4 +1,4 @@
-import React, { useContext, useEffect, useState } from "react";
+import React, { useContext, useEffect, useState, useRef } from "react";
 import "../index.css"
 import TaskCardComp from "./TaskCardComp";
 import { TaskModel } from "../Models/TaskModel";
@@ -8,27 +8,22 @@ import { getTasks } from "../Services/TaskService";
 import { Task } from "@mui/icons-material";
 
 const History = () => {
+    const Context = useContext(TaskContext)
+    const username = sessionStorage.getItem("username")
+    const [loading, setLoading] = useState(false); // Track loading state
+    const [tasks, setTasks] = useState<TaskModel[]>([]);
 
-  const Context = useContext(TaskContext)
-
-  const username = sessionStorage.getItem("username")
-  
-  const [loading, setLoading] = useState(true); // Track loading state
-
-  // Fetch tasks
+    // Wraped in useRef to avoid double loading.
+    const hasFetched = useRef(false);
 
     const fetchTasks = async () => {
-        setLoading(true);
-        if (username && Context) {
+        if (!hasFetched.current && username && Context) {
+            hasFetched.current = true;
+            setLoading(true);
             try {
-                const tasks = await getTasks({ username });
-
-                console.log("PRINTING TASKS FROM HISTORY VIEW");
-                console.log(tasks);
-
-
-
-                Context.setTask(tasks); // Update context with fetched tasks
+                const tasks = await getTasks();
+                Context.setTask(tasks);
+                setTasks(tasks);
             } catch (error) {
                 console.error("Failed to fetch tasks:", error);
             } finally {
@@ -38,8 +33,10 @@ const History = () => {
     };
 
   useEffect(() => {
-    fetchTasks(); // Call fetchTasks on component mount
-  }, [username]); 
+
+      fetchTasks(); // Call fetchTasks on component mount
+
+  }, [username]);
 
 
       //margin for our task cards
@@ -47,15 +44,6 @@ const History = () => {
       const marginBottomValue = "10px"
 
 
-      //List of tasks to display or not display if empty.
-
-      // List of tasks
-      const listOfTask = Context?.tasks ?? [];
-
-      console.log({ listOfTask })
-
-  
-      
       //Hardcoded New Task Option.
       const taskCreateNew = {
         title: "Ny Tidsregistrering",
@@ -67,24 +55,24 @@ const History = () => {
 
       
       // Filter tasks by status
-      const DraftTasks = listOfTask
+      const DraftTasks = tasks
       .filter((task) => task.modelStatus == ETaskStatus.Draft)
       .map((task, index) => <TaskCardComp key={index} task={task} marginTop={marginTopValue} marginBottom={marginBottomValue} />);
 
-      const awaitapprovedTasks = listOfTask
+      const awaitapprovedTasks = tasks
       .filter((task) => task.modelStatus == ETaskStatus.AwaitingApproval)
       .map((task, index) => <TaskCardComp key={index} task={task} marginTop={marginTopValue} marginBottom={marginBottomValue} />);
 
-      const approvedTasks = listOfTask
+      const approvedTasks = tasks
       .filter((task) => task.modelStatus == ETaskStatus.Approved)
       .map((task, index) => <TaskCardComp key={index} task={task} marginTop={marginTopValue} marginBottom={marginBottomValue} />);
 
-      const rejectedTasks = listOfTask
+      const rejectedTasks = tasks
       .filter((task) => task.modelStatus === ETaskStatus.Rejected)
       .map((task, index) => <TaskCardComp key={index} task={task} marginTop={marginTopValue} marginBottom={marginBottomValue} />);
 
       // Check if there are no tasks at all
-      const noTasks = listOfTask.length === 0;
+      const noTasks = tasks.length === 0;
   
     
       // Check if all history lists are empty

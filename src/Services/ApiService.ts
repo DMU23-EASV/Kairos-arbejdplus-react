@@ -12,12 +12,14 @@ const headers = {
 // Utility type for API responses.
 export interface ApiResponse<T> {
   data: T;
-  status: number;
+  status: string;
   message: string;
 }
 
+
+
 // Function for making GET requests
-export const getData = async <T>(endpoint: string): Promise<T> => {
+export const getData = async<T> (endpoint: string): Promise<ApiResponse<T>> => {
   try {
     const response = await fetch(`${BASE_URL}/${endpoint}`, {
       method: 'GET',
@@ -28,9 +30,11 @@ export const getData = async <T>(endpoint: string): Promise<T> => {
       console.error(`HTTP Error ::: URL ${BASE_URL} | ENDPOINT ${endpoint}`);
       throw new Error(`HTTP Error Code: ${response.status}`);
     }
+
     const data: T = await response.json();
-    console.log("WAT UP " + data)
-    return data; // Only return the raw data (task list)
+    return { data, status: response.status.toString(), message: 'Data fetched successfully' };
+
+
   } catch (error) {
     console.error("Error fetching data:", error);
     throw error;
