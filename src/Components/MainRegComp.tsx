@@ -475,26 +475,30 @@ function MainRegComp() {
                        
             />
 
-            <Stack className='buttons-wrapper' spacing={2} direction="row">
+            <Stack className='buttons-wrapper' spacing={2} direction="row" marginBottom={"50px"}>
                 <Button variant="contained"
                         size="small"
                         sx={{ color: 'black', backgroundColor: 'lightgrey', '&:hover': { backgroundColor: 'darkgrey' } }}
                         // changing view to '/history'
                         onClick={handleAnnullerClick}>
-                        Annuller</Button>
+                            Annuller
+                </Button>
 
                 <Button variant="contained"
                         size="small"
                         sx={{ color: 'black', backgroundColor: 'lightgrey', '&:hover': { backgroundColor: 'darkgrey' } }}
                         onClick={handleSaveClick}>
-                        Gem som kladde</Button>
+                            Gem som kladde
+                </Button>
 
                 <Button variant="contained"
                         size="small"
                         sx={{ color: 'black', backgroundColor: 'lightgrey', '&:hover': { backgroundColor: 'darkgrey' } }}
                         onClick={handleSendClick}>
-                        Send</Button>
-                        <Link to="/history" ref={linkRefHistory} style={{display: 'none'}}/> 
+                            Send
+                </Button>
+
+                <Link to="/history" ref={linkRefHistory} style={{display: 'none'}}/> 
             </Stack>
         </div>
     );
