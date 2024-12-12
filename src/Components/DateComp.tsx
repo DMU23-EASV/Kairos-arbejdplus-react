@@ -7,11 +7,12 @@ import { DatePicker } from '@mui/x-date-pickers/DatePicker';
 interface DateCompProps{
     title: string;
     value?: Dayjs;
+    errorMessage?: string;
     onDateChange: (value: Dayjs | null) => void;
 }
 
-
-const DateComp: React.FC<DateCompProps> = ({ title, value, onDateChange }) => {
+// DateComp is a functional component that uses the DateCompProps interface to define the props: title, value, onDateChange 
+const DateComp: React.FC<DateCompProps> = ({ title, value, errorMessage, onDateChange }) => {
     
     const handleDateChange = (newVal:Dayjs | null) => {
         if (newVal){
@@ -27,7 +28,12 @@ const DateComp: React.FC<DateCompProps> = ({ title, value, onDateChange }) => {
                     format={"DD-MM-YYYY"}
                     label={title}
                     sx={{ m: 2, width: '30ch' }}
-                    slotProps={{ textField: { size: 'small' } }}
+                    slotProps={{ textField: {
+                            size: 'small',
+                            error: !!errorMessage,   
+                            helperText: errorMessage || '', 
+                        } 
+                    }}
                     value={value ? dayjs(value) : null}
                     onChange={handleDateChange}
                 />

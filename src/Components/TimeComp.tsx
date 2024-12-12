@@ -12,6 +12,8 @@ interface TimeCompProps {
     onTimeChangeError?: (errorMessage: string) => void;
 }
 
+
+// TimeComp is a functional component that uses the TimeCompProps interface to define the props: title, value, errorMessage, onTimeChange 
 const TimeComp: React.FC<TimeCompProps> = ({ title, value, errorMessage, onTimeChange }) => {
     
     const handleChange = (event: React.ChangeEvent<HTMLInputElement>) => {
