@@ -39,16 +39,16 @@ const BottomNavigationComp: React.FC = () => {
                     }}
                 >
                     <BottomNavigationAction
-                        label="Task"
-                        icon={<AssignmentIcon style={{ color: "white" }} />}
-                        component={Link}
-                        to="/tasks"
-                    />
-                    <BottomNavigationAction
                         label="History"
                         icon={<HistoryIcon style={{ color: "white" }} />}
                         component={Link}
                         to="/history"
+                    />
+                    <BottomNavigationAction
+                        label="Task"
+                        icon={<AssignmentIcon style={{ color: "white" }} />}
+                        component={Link}
+                        to="/tasks"
                     />
                     <BottomNavigationAction
                         label="Notification"

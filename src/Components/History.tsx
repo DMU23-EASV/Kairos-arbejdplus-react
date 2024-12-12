@@ -48,7 +48,6 @@ const History = () => {
       const taskCreateNew = {
         title: "Ny Tidsregistrering",
         undertitle: "Registrering af nye data",
-        status: "Draft",
         km: 0,
         totaltime: 0
       };

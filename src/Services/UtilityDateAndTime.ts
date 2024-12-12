@@ -1,6 +1,7 @@
 import dayjs, {Dayjs} from "dayjs";
+import { date } from "yup";
 
-export class UtilityDateTime {
+export class UtilityDateAndTime {
 
     /**
      * This method converts a time given as a string into a Date object
@@ -28,13 +29,16 @@ export class UtilityDateTime {
      */
     public static convertDateTimeToStringTime(time:Date | undefined): string{
         
-        if (!time){
-            return "";
-            
-        } else {
+        let dateTimeThing = time;
 
-            return `${time?.getHours().toString().padStart(2, '0')}:${time?.getMinutes().toString().padStart(2, '0')}`;
-        }
+        if (!dateTimeThing){
+            dateTimeThing = "";
+        } else if (!(dateTimeThing instanceof date)) {
+            dateTimeThing = new Date(dateTimeThing);
+        } 
+
+        return `${dateTimeThing?.getHours().toString().padStart(2, '0')}:${dateTimeThing?.getMinutes().toString().padStart(2, '0')}`;
+
     }
 
     
@@ -44,7 +48,8 @@ export class UtilityDateTime {
      * @return the given date as a Dayjs object
      */
     public static convertDateToDayjsType(date: Date | undefined): dayjs.Dayjs {
-        
+        console.log("Todays Date: " + date)
+
         if (!date){
             return dayjs();
         } else { 

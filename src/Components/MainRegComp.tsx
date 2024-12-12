@@ -1,10 +1,10 @@
 import StartRegComp from './StartRegComp';
-import {useRef, useState} from "react";
+import {useRef, useState, useEffect} from "react";
 import RegTaskHeadlineComp from "./RegTaskHeadlineComp.tsx";
 import EndRegComp from "./EndRegComp.tsx";
 import Button from "@mui/material/Button";
 import {NEW_TASK_PAGE_TITLE} from "../Constants.ts";
-import {Link} from "react-router-dom";
+import {Link, useLocation} from "react-router-dom";
 import {Stack} from '@mui/material';
 import {TaskModel} from "../Models/TaskModel.ts";
 import dayjs, {Dayjs} from "dayjs";
@@ -14,11 +14,25 @@ import {TimePeriodRules} from "../Services/ValidationRules/TimePeriodRules.ts";
 import {DistanceRules} from "../Services/ValidationRules/DistanceRules.ts";
 import {ETaskStatus} from "../Enum/ETaskStatus.ts";
 import {EErrorMessages} from "../Enum/EErrorMessages.ts";
-import {UtilityDateTime} from "../Services/UtilityDateAndTime.ts";
+import {UtilityDateAndTime} from "../Services/UtilityDateAndTime.ts";
 import {UtilityKm} from "../Services/UtilityKm.ts";
+import {PostTask, PutTask} from "../Services/TaskService.ts";
 
+interface MainRegCompProp {
+    task: TaskModel; // The task prop is of type TaskModel
+  }
 
-function MainRegComp() {
+const MainRegComp: React.FC<MainRegCompProp> = () => {
+    
+    const location = useLocation();
+    const task: TaskModel = location.state?.task;
+
+    useEffect(() => {
+        if (task) {
+            console.log("Loaded task:", task.owner, "Name: ", task.name);
+            loadTaskObject(task);
+        }
+    }, [task]);
 
     // Reference to a hidden Link element for program navigation to "/history"
     const linkRefHistory = useRef<HTMLAnchorElement>(null);
@@ -113,23 +127,7 @@ function MainRegComp() {
         setRemark(newRemark);
         console.log(newRemark);
     };
-
-    
-    function loadTaskObject(excTaskObj:TaskModel): void{
-        
-        setDate(UtilityDateTime.convertDateToDayjsType(excTaskObj.selecteDate));
-        setStartTime(UtilityDateTime.convertDateTimeToStringTime(excTaskObj.startTime));
-        setStartKm(UtilityKm.kmToString(excTaskObj.startKm));  
-        setEndTime(UtilityDateTime.convertDateTimeToStringTime(excTaskObj.endTime));
-        setEndKm(UtilityKm.kmToString(excTaskObj.endKm));
-        setRemark(excTaskObj.remark ?? "");
-        
-        console.log("task object loaded..")
-    }
-    
-    
-    
-
+  
     /**
      * This function handles the case where user clicks the "Annuller" button and 
      * switches the view to history without performing any database save operation
@@ -409,12 +407,16 @@ function MainRegComp() {
         // Task object to save in database
         const taskObj: TaskModel = new TaskModel();
         
+        if (startTime == ""){
+            setStartTime("00:00")
+        }
+
         taskObj.owner = sessionStorage.getItem("username")!.toString();
         taskObj.selecteDate = date?.toDate();
-        taskObj.startTime = UtilityDateTime.convertTimeStringToDateType(date.toDate(), startTime);
-        taskObj.startKm = parseInt(startKm);
-        taskObj.endTime = UtilityDateTime.convertTimeStringToDateType(date.toDate(), endTime); 
-        taskObj.endKm = parseInt(endKm);
+        taskObj.startTime = UtilityDateAndTime.convertTimeStringToDateType(date.toDate(), startTime);
+        taskObj.startKilometers = parseInt(startKm);
+        taskObj.endTime = UtilityDateAndTime.convertTimeStringToDateType(date.toDate(), endTime); 
+        taskObj.endKilometers = parseInt(endKm);
         taskObj.remark = remark;
         taskObj.modelStatus = taskStatus;
             
@@ -430,10 +432,31 @@ function MainRegComp() {
         console.log(taskObj);
         console.log("Send to database...");
 
+        if (taskObj.modelStatus === ETaskStatus.AwaitingApproval){
+            {PostTask(taskObj)}
+            alert("Sendt til godkendelse")
+        } else if (taskObj.modelStatus === ETaskStatus.Draft) {
+            {PutTask(taskObj)}
+            alert("Gemt som Kladde")
+        } else {
+            alert("Kan ikke gemmes til Database!")
+        }   
+        changeViewToHistory();
     }
     
-    
-    
+    function loadTaskObject(excTaskObj:TaskModel): void{
+        console.log("BEFORE ADDING TO COMP: Object Start Time: " + excTaskObj.startTime)
+
+        console.log("BEFORE ADDING TO COMP: Loading Task Object " +  excTaskObj.owner )
+        setDate(UtilityDateAndTime.convertDateToDayjsType(excTaskObj.startTime));
+        setStartTime(UtilityDateAndTime.convertDateTimeToStringTime(excTaskObj.startTime));
+        setStartKm(UtilityKm.kmToString(excTaskObj.startKilometers));  
+        setEndTime(UtilityDateAndTime.convertDateTimeToStringTime(excTaskObj.endTime));
+        setEndKm(UtilityKm.kmToString(excTaskObj.endKilometers));
+        setRemark(excTaskObj.remark ?? "");
+        
+        console.log("task object loaded..")
+    }
     
    
   

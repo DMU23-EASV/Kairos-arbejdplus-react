@@ -47,7 +47,7 @@ export default function LoginComp({ onLogin }: LoginCompProps) {
             console.log("Login successful. HttpOnly cookie set by server.");
 
             // Navigate to another page after successful login
-            navigate("/tasks");
+            navigate("/history");
         } catch (error) {
             console.error('Error during login:', error);
             alert('Unable to connect to the server. Please try again later.');
