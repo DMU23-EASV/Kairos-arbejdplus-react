@@ -10,7 +10,7 @@ interface KmCompProps {
 }
 
 
-// KmComp is a functional component that uses the KmCompProps interface to define the props ({ title, value, onChange }).
+// KmComp is a functional component that uses the KmCompProps interface to define the props: title, value, errorMessage, onKmChange 
 const KmComp: React.FC<KmCompProps> = ({ title, value, errorMessage, onKmChange }) => {
     
     const handleChange = (event: React.ChangeEvent<HTMLInputElement>) => {

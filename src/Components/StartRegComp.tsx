@@ -19,9 +19,10 @@ interface StartRegCompProps {
 }
 
 
-    // StartRegComp is a functional component that uses the StartRegCompProps interface to define the props ({ titleStartTime, titleStartKm, timeStart, kmStart, onTimeChange, onKmChange }).
+    // StartRegComp is a functional component that uses the StartRegCompProps interface to define the props:
+    // titleDate, titleStartTime, titleStartKm, date, timeStart, kmStart, errorDateMessage, errorTimeMessage, errorKmMessage, onDateChange, onTimeChange, onKmChange
     const StartRegComp: React.FC<StartRegCompProps> = ({
-        titleDate, titleStartTime, titleStartKm, date, timeStart, kmStart, errorTimeMessage, errorKmMessage, onDateChange, onTimeChange, onKmChange 
+        titleDate, titleStartTime, titleStartKm, date, timeStart, kmStart, errorDateMessage, errorTimeMessage, errorKmMessage, onDateChange, onTimeChange, onKmChange 
     }) => {
     
     
@@ -31,6 +32,7 @@ interface StartRegCompProps {
 
                 <DateComp title={titleDate}
                           value={dayjs(date)}
+                          errorMessage={errorDateMessage}
                           onDateChange={onDateChange}/>
 
                 <TimeComp title={titleStartTime}
