@@ -1,4 +1,4 @@
-import {ETaskStatus} from "../Enum/ETaskStatus.ts";
+import {ETaskStatus} from "../Enum/ETaskStatus";
 
 export class TaskModel{
 
@@ -9,7 +9,7 @@ export class TaskModel{
     public selecteDate?:Date;
     public startTime?:Date;
     public endTime?:Date;
-    public startKm?:number;
-    public endKm?:number;
+    public startKilometers?:number;
+    public endKilometers?:number;
 
 }

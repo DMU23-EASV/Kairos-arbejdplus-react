@@ -4,38 +4,56 @@ import { AuthProvider, useAuth } from "./Services/AuthProvider";
 import BottomNavigationComp from "./Components/BottomNavigationComp.tsx";
 import TopNavigationComp from "./Components/TopNavigationComp.tsx";
 import LoginComp from "./Components/LoginComp.tsx";
-import React from "react";
+import React, { useContext, useEffect, useState } from "react";
+import HistoryComp from "./Components/History.tsx";
+import { TaskProvider } from './TaskContext.tsx';
+import { TaskModel } from './Models/TaskModel.ts';
 import MainRegComp from "./Components/MainRegComp.tsx";
 
 
 function App() {
     return (
         <AuthProvider>
-            <Router>
-                <Main />
-            </Router>
+                <Router>
+                    <Main />
+                </Router>
         </AuthProvider>
     );
 }
 
 const Main: React.FC = () => {
     const { isLoggedIn, login, logout } = useAuth();
+    const [isAuthChecked, setIsAuthChecked] = useState(false);
+
+    // Wait until authentication status is checked
+    useEffect(() => {
+        console.log("isLoggedIn:", isLoggedIn); // Log the value of isLoggedIn
+        // Assuming `isLoggedIn` can change asynchronously
+        if (isLoggedIn !== undefined) {
+            setIsAuthChecked(true);
+        }
+    }, [isLoggedIn]);
+
+    // If authentication status hasn't been checked yet, show loading state
+    if (!isAuthChecked) {
+        return <div><h1>Loading...</h1></div>;
+    }
+
 
     return (
         <div>
             {isLoggedIn ? (
                 <>
-                    <TopNavigationComp isLoggedIn={isLoggedIn} onLogout={logout} />
-                    <Routes>
-                        <Route path="/" element={<h1 style={{color: 'black'}}>Body Goes Here</h1>} />
-                        <Route path="/tasks" element={
-                                <MainRegComp/>
-                        } />
-                        <Route path="/history" element={<h1 style={{color: 'black'}}>History Page</h1>} />
-                        <Route path="/notifications" element={<h1 style={{color: 'black'}}>Notifications Page</h1>} />
-                    </Routes>
-                    <BottomNavigationComp />
-                    
+                    <TaskProvider>
+                        <TopNavigationComp isLoggedIn={isLoggedIn} onLogout={logout} />
+                        <Routes>
+                            <Route path="/" element={<h1 style={{color: 'black'}}>Body Goes Here</h1>} />
+                            <Route path="/tasks" element={  <MainRegComp/> } />
+                            <Route path="/history" element={ <HistoryComp /> } />
+                            <Route path="/notifications" element={<h1 style={{color: 'black'}}>Notifications Page</h1>} />
+                        </Routes>
+                        <BottomNavigationComp /> 
+                    </TaskProvider>      
                 </>
             ) : (
                 <LoginComp onLogin={login} />
