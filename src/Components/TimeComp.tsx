@@ -2,7 +2,7 @@ import TextField from '@mui/material/TextField';
 import InputAdornment from "@mui/material/InputAdornment";
 import { IconButton } from "@mui/material";
 import AccessTimeSharpIcon from '@mui/icons-material/AccessTimeSharp';
-import {UtilityDateTime} from "../Services/UtilityDateTime.ts";
+import {UtilityDateTime} from "../Services/UtilityDateAndTime";
 
 interface TimeCompProps {
     title: string;
