@@ -1,9 +1,5 @@
 import {ETaskStatus} from "../Enum/ETaskStatus";
-
-interface ObjectId {
-    timeStamp: number;
-    creationTime: Date;
-}
+import { ObjectId } from 'bson';
 
 export class TaskModel{
 

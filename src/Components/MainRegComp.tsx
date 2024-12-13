@@ -17,6 +17,7 @@ import {EErrorMessages} from "../Enum/EErrorMessages.ts";
 import {UtilityDateAndTime} from "../Services/UtilityDateAndTime.ts";
 import {UtilityKm} from "../Services/UtilityKm.ts";
 import {PostTask, PutTask} from "../Services/TaskService.ts";
+import { ObjectId } from 'bson';
 
 interface MainRegCompProp {
     task: TaskModel; // The task prop is of type TaskModel
@@ -423,24 +424,51 @@ const MainRegComp: React.FC<MainRegCompProp> = () => {
         return taskObj;
     }
 
+    //Hallo Debug.
+    const ab = {
+        "comment": "HALLO",
+        "endKilometers": 20,
+        "endTime": "2024-12-13T08:50:00Z",
+        "id": "675beca1c23d2c3b665f4918",
+        "modelStatus": 1,
+        "name": "bob3",
+        "owner": "ib",
+        "startKilometers": 12,
+        "startTime": "2024-12-13T07:51:00Z",
+        "temporaryField": null
+    }
+
+    let testobj : TaskModel = new TaskModel();
+    testobj.name = "Jeg er sej";
+    testobj._id = new ObjectId("675bfc4fa8225efa16e7d8c9");
+    testobj.startTime = new Date("2024-12-13T08:50:00Z");
+    testobj.modelStatus = 1;
+
+    function test() {
+        console.log(testobj._id)
+        sendToDatabase(testobj)
+    }
+
+    
 
     /**
      * 
      * @param taskObj The created task object to be sent to the database
      */
     function sendToDatabase(taskObj:TaskModel): void {
-        console.log(taskObj);
-        console.log("Send to database...");
+        console.log("MainRegComp - sendToDatabase: Send to database..." + taskObj);
+        console.log("MainRegComp - sendToDatabase: TASK ID IS : " + taskObj._id)
 
-        if (taskObj.modelStatus === ETaskStatus.AwaitingApproval){
-            {PostTask(taskObj)}
-            alert("Sendt til godkendelse")
-        } else if (taskObj.modelStatus === ETaskStatus.Draft) {
-            {PutTask(taskObj)}
-            alert("Gemt som Kladde")
+        if(taskObj._id === undefined){
+            {PostTask(taskObj)} 
+            alert("Ny Tids registering")
+            console.log("POST")
         } else {
-            alert("Kan ikke gemmes til Database!")
-        }   
+            (PutTask(taskObj))
+            alert("Tids registering ændret")
+            console.log("PUT")
+
+        }
         changeViewToHistory();
     }
     
@@ -520,6 +548,8 @@ const MainRegComp: React.FC<MainRegCompProp> = () => {
                         onClick={handleSendClick}>
                             Send
                 </Button>
+
+                <button onClick={test}></button>
 
                 <Link to="/history" ref={linkRefHistory} style={{display: 'none'}}/> 
             </Stack>

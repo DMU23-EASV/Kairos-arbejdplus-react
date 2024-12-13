@@ -29,16 +29,10 @@ export class UtilityDateAndTime {
      */
     public static convertDateTimeToStringTime(time:Date | undefined): string{
         
-        let dateTimeThing = time;
+        let dateTimeThing = new Date(time);
 
-        if (!dateTimeThing){
-            dateTimeThing = "";
-        } else if (!(dateTimeThing instanceof date)) {
-            dateTimeThing = new Date(dateTimeThing);
-        } 
-
+        //TODO: Handle undefiend or null
         return `${dateTimeThing?.getHours().toString().padStart(2, '0')}:${dateTimeThing?.getMinutes().toString().padStart(2, '0')}`;
-
     }
 
     

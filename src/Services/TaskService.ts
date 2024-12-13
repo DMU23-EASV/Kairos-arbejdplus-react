@@ -29,7 +29,7 @@ export const PostTask = async ( task: TaskModel ): Promise<TaskModel> => {
 
 export const PutTask = async ( task: TaskModel ): Promise<TaskModel> => {
   try {
-    const putTask = await putData('task/', task)
+  const putTask = await putData('api/task', task)
     return putTask.data as TaskModel;
   } catch (error) {
     console.error("Failed to put task", error)

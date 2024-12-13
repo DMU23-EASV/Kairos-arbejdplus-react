@@ -42,7 +42,7 @@ interface TaskCardCompProps {
             changeViewToTask();
             return;
         }
-        console.log("SENDING DATE: " + task.startTime);
+        console.log("SENDING DATE: " + task.startTime + "ID: " + task._id);
         navigate("/tasks", {state: {task}});
         //changeViewToTask();
     }
@@ -110,7 +110,6 @@ interface TaskCardCompProps {
         icon = <AddCircleOutlineOutlinedIcon sx={{ ...iconProps }} />;
     }
 
-    console.log("THIS IS THE DATE MOTHEFFUCKER: " + task.startTime + "ID " + task.name)
     return (
       <React.Fragment>
         <Card sx={{ display: 'flex', opacity: opacityStyle, cursor: cursorStyle, marginTop, marginBottom }} onClick={handleTaskClick}>
