@@ -1,9 +1,8 @@
 import {ETaskStatus} from "../Enum/ETaskStatus";
-import { ObjectId } from 'bson';
 
 export class TaskModel{
 
-    public _id?: ObjectId;
+    public bsonId?: string;
     public name?: string;
     public remark?:string;
     public modelStatus?:ETaskStatus;

@@ -10,6 +10,7 @@ import { Task } from "@mui/icons-material";
 const History = () => {
     const Context = useContext(TaskContext)
     const username = sessionStorage.getItem("username")
+    // @ts-ignore
     const [loading, setLoading] = useState(false); // Track loading state
     const [tasks, setTasks] = useState<TaskModel[]>([]);
 

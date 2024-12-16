@@ -1,4 +1,3 @@
-import { Task } from "@mui/icons-material";
 import { TaskModel } from "../Models/TaskModel";
 import {getData, putData, postData, deleteData, ApiResponse} from "./ApiService";
 
@@ -29,7 +28,7 @@ export const PostTask = async ( task: TaskModel ): Promise<TaskModel> => {
 
 export const PutTask = async ( task: TaskModel ): Promise<TaskModel> => {
   try {
-  const putTask = await putData('api/task', task)
+  const putTask = await putData(`api/task/${task.bsonId}`, task)
     return putTask.data as TaskModel;
   } catch (error) {
     console.error("Failed to put task", error)
