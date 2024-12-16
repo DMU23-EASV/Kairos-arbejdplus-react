@@ -24,21 +24,22 @@ interface MainRegCompProp {
   }
 
 const MainRegComp: React.FC<MainRegCompProp> = () => {
+
+    // Task object to save in database
+    const taskObj: TaskModel = new TaskModel();
     
     const location = useLocation();
     const task: TaskModel = location.state?.task;
 
     useEffect(() => {
         if (task) {
-            console.log("Loaded task:", task.owner, "Name: ", task.name);
-            loadTaskObject(task);
+            loadTaskObject();
         }
     }, [task]);
 
     // Reference to a hidden Link element for program navigation to "/history"
     const linkRefHistory = useRef<HTMLAnchorElement>(null);
-
-
+ 
     /**
      * Function for changing view to /history
      */
@@ -404,9 +405,6 @@ const MainRegComp: React.FC<MainRegCompProp> = () => {
      * @return a created task object
      */
     function createTaskObj(taskStatus:ETaskStatus):TaskModel {
-
-        // Task object to save in database
-        const taskObj: TaskModel = new TaskModel();
         
         if (startTime == ""){
             setStartTime("00:00")
@@ -418,70 +416,43 @@ const MainRegComp: React.FC<MainRegCompProp> = () => {
         taskObj.startKilometers = parseInt(startKm);
         taskObj.endTime = UtilityDateAndTime.convertTimeStringToDateType(date.toDate(), endTime); 
         taskObj.endKilometers = parseInt(endKm);
-        taskObj.remark = remark;
+        taskObj.comment = remark;
         taskObj.modelStatus = taskStatus;
             
         return taskObj;
     }
-
-    //Hallo Debug.
-    const ab = {
-        "comment": "HALLO",
-        "endKilometers": 20,
-        "endTime": "2024-12-13T08:50:00Z",
-        "id": "675beca1c23d2c3b665f4918",
-        "modelStatus": 1,
-        "name": "bob3",
-        "owner": "ib",
-        "startKilometers": 12,
-        "startTime": "2024-12-13T07:51:00Z",
-        "temporaryField": null
-    }
-
-    let testobj : TaskModel = new TaskModel();
-    testobj.name = "Jeg er sej";
-    testobj._id = new ObjectId("675bfc4fa8225efa16e7d8c9");
-    testobj.startTime = new Date("2024-12-13T08:50:00Z");
-    testobj.modelStatus = 1;
-
-    function test() {
-        console.log(testobj._id)
-        sendToDatabase(testobj)
-    }
-
-    
 
     /**
      * 
      * @param taskObj The created task object to be sent to the database
      */
     function sendToDatabase(taskObj:TaskModel): void {
-        console.log("MainRegComp - sendToDatabase: Send to database..." + taskObj);
-        console.log("MainRegComp - sendToDatabase: TASK ID IS : " + taskObj._id)
 
-        if(taskObj._id === undefined){
-            {PostTask(taskObj)} 
-            alert("Ny Tids registering")
-            console.log("POST")
-        } else {
+        if (task)
+        {
+            taskObj.id = task.id;
             (PutTask(taskObj))
-            alert("Tids registering ændret")
-            console.log("PUT")
-
+        } else {
+            PostTask(taskObj)
         }
+
+        console.log("MainRegComp - sendToDatabase: Send to database..." + taskObj);
+        console.log("MainRegComp - sendToDatabase: TASK ID IS : " + taskObj.id);
+        
         changeViewToHistory();
     }
     
-    function loadTaskObject(excTaskObj:TaskModel): void{
-        console.log("BEFORE ADDING TO COMP: Object Start Time: " + excTaskObj.startTime)
+    function loadTaskObject(): void{
+        console.log("BEFORE ADDING TO COMP: Object Start Time: " + task.startTime)
 
-        console.log("BEFORE ADDING TO COMP: Loading Task Object " +  excTaskObj.owner )
-        setDate(UtilityDateAndTime.convertDateToDayjsType(excTaskObj.startTime));
-        setStartTime(UtilityDateAndTime.convertDateTimeToStringTime(excTaskObj.startTime));
-        setStartKm(UtilityKm.kmToString(excTaskObj.startKilometers));  
-        setEndTime(UtilityDateAndTime.convertDateTimeToStringTime(excTaskObj.endTime));
-        setEndKm(UtilityKm.kmToString(excTaskObj.endKilometers));
-        setRemark(excTaskObj.remark ?? "");
+        console.log("BEFORE ADDING TO COMP: Loading Task Object " +  task.owner )
+        
+        setDate(UtilityDateAndTime.convertDateToDayjsType(task.startTime));
+        setStartTime(UtilityDateAndTime.convertDateTimeToStringTime(task.startTime));
+        setStartKm(UtilityKm.kmToString(task.startKilometers));  
+        setEndTime(UtilityDateAndTime.convertDateTimeToStringTime(task.endTime));
+        setEndKm(UtilityKm.kmToString(task.endKilometers));
+        setRemark(task.comment ?? "");
         
         console.log("task object loaded..")
     }
@@ -548,9 +519,6 @@ const MainRegComp: React.FC<MainRegCompProp> = () => {
                         onClick={handleSendClick}>
                             Send
                 </Button>
-
-                <button onClick={test}></button>
-
                 <Link to="/history" ref={linkRefHistory} style={{display: 'none'}}/> 
             </Stack>
         </div>
