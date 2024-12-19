@@ -174,7 +174,7 @@ const MainRegComp: React.FC<MainRegCompProp> = () => {
      * @param taskStatus The status of the task to be created (e.g., Draft, AwaitingApproval).
      */
     function handleIfSomeFieldsAreFilledOut(taskStatus: ETaskStatus) {
-        
+        console.log("HANDLING SOME FIELDS METODE")
         let timeIsValid: boolean = true;
         let kmIsValid: boolean = true;
         
@@ -184,11 +184,11 @@ const MainRegComp: React.FC<MainRegCompProp> = () => {
             
             if (!timePeriodIsValid){
                 timeIsValid = false;
-                console.log("Time inputs wasn't valid")
+                console.log("SOME FIELDS - Time inputs wasn't valid")
                 setTimePeriodError(EErrorMessages.StartTimeBeforeEndTime);
                 
             } else {
-                console.log("Time inputs is valid")
+                console.log("SOME FIELDS - Time inputs is valid")
                 setTimePeriodError(EErrorMessages.NoError);
             }
         }
@@ -198,11 +198,11 @@ const MainRegComp: React.FC<MainRegCompProp> = () => {
             
             if (!kmDistanceIsValid){
                 kmIsValid = false;
-                console.log("Km inputs wasn's valid")
+                console.log("SOME FIELDS - Km inputs wasn's valid")
                 setDistanceError(EErrorMessages.StartKmBeforeEndKm)
               
             } else {
-                console.log("Km inputs is valid")
+                console.log("SOME FIELDS - Km inputs is valid")
                 setDistanceError(EErrorMessages.NoError);
             }
         } 
@@ -213,7 +213,7 @@ const MainRegComp: React.FC<MainRegCompProp> = () => {
             sendToDatabase(taskObj);
             
         } else {
-            console.log("Not valid inputs")
+            console.log("SOMEFIELDS ARE FILLED OUT - Not valid inputs")
         }
         
     }
@@ -309,17 +309,18 @@ const MainRegComp: React.FC<MainRegCompProp> = () => {
      * @param taskStatus The status of the task to be created (e.g., Draft, AwaitingApproval).
      */
     function handleIfAllFieldsAreFilledOut(taskStatus:ETaskStatus): void {
+        console.log("HANDLING ALL FIELDS")
         const timeIsValid = validateTimePeriod(startTime, endTime);
         const kmIsValid = validateKmDistance(startKm, endKm);
 
         if (timeIsValid && kmIsValid){
-            console.log("Data is Valid")
+            console.log("ALL FIELDS - Data is Valid")
             const taskObj:TaskModel = createTaskObj(taskStatus);
 
             sendToDatabase(taskObj);
 
         } else {
-            console.log("Not valid data")
+            console.log("ALL FIELDS ARE FILLED OUT - Not valid data")
             
             if (!timeIsValid){
                 setTimePeriodError(EErrorMessages.StartTimeBeforeEndTime);
@@ -401,6 +402,7 @@ const MainRegComp: React.FC<MainRegCompProp> = () => {
 
     /**
      * This function creates a task object based on the filled-out fields and a given task status.
+     * We have to check that no data is null, as the API wont accept null values.
      * @param taskStatus The status of the task to be created (e.g., Draft, AwaitingApproval).
      * @return a created task object
      */
@@ -415,14 +417,23 @@ const MainRegComp: React.FC<MainRegCompProp> = () => {
 
         taskObj.owner = sessionStorage.getItem("username")!.toString();
         taskObj.selecteDate = date?.toDate();
+
+        if(endTime != null){
+            taskObj.endTime = UtilityDateAndTime.convertTimeStringToDateType(date.toDate(), endTime); 
+        }
+
+        if(parseInt(startKm)){
+            taskObj.startKilometers = parseInt(startKm)
+        }
+
+        if(parseInt(endKm)){
+            taskObj.endKilometers = parseInt(endKm);
+        }
         taskObj.startTime = UtilityDateAndTime.convertTimeStringToDateType(date.toDate(), startTime);
-        taskObj.startKilometers = parseInt(startKm);
-        taskObj.endTime = UtilityDateAndTime.convertTimeStringToDateType(date.toDate(), endTime); 
-        taskObj.endKilometers = parseInt(endKm);
         taskObj.name = remark;
         taskObj.modelStatus = taskStatus;
 
-        if (task.bsonId != undefined) {
+        if (task && task.bsonId != undefined) {
             taskObj.bsonId = task.bsonId;
         }
 
@@ -446,7 +457,12 @@ const MainRegComp: React.FC<MainRegCompProp> = () => {
         } else {
             (PutTask(taskObj))
             alert("Tids registering ændret")
-            //console.log("PUT")
+            console.log("PUT")
+            console.log("START KM : " + taskObj.endKilometers)
+            console.log("END KM : " + taskObj.startKilometers)
+            console.log("START TIME : " + taskObj.startTime)
+            console.log("END TIME : " + taskObj.endTime)
+            console.log("COMMENT : " + taskObj.comment)
 
         }
         changeViewToHistory();

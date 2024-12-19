@@ -42,7 +42,7 @@ interface TaskCardCompProps {
             changeViewToTask();
             return;
         }
-        console.log("SENDING DATE: " + task.startTime + "ID: " + task._id);
+        console.log("SENDING DATE: " + task.startTime + "ID: " + task.id);
         navigate("/tasks", {state: {task}});
         //changeViewToTask();
     }
@@ -110,6 +110,21 @@ interface TaskCardCompProps {
         icon = <AddCircleOutlineOutlinedIcon sx={{ ...iconProps }} />;
     }
 
+    const areValuesDefined = (...values: any[]) => values.every(value => value !== undefined && value !== null && value != 0);
+
+    const calculateTimeDifference = (start: string, end: string) => {
+        const timeDifference = new Date(end).getTime() - new Date(start).getTime();
+        const totalMinutes = timeDifference / (1000 * 60);
+        let hours = Math.floor(totalMinutes / 60).toString().padStart(2, "0");
+        let minutes = Math.floor(totalMinutes % 60).toString().padStart(2, "0");
+        if (parseInt(hours) < 0){
+            hours = "0", minutes = "0"
+        }
+        return `${hours}:${minutes}(tt:mm)`;
+    };
+
+    const calculateDistance = (start: number, end: number) => (end - start).toFixed(0);
+
     return (
       <React.Fragment>
         <Card sx={{ display: 'flex', opacity: opacityStyle, cursor: cursorStyle, marginTop, marginBottom }} onClick={handleTaskClick}>
@@ -135,24 +150,30 @@ interface TaskCardCompProps {
                     )}
                 </Typography>
 
-                {startKilometers !== undefined && endKilometers !== undefined && startTime !== undefined && endTime !== undefined && (
-                <Typography
-                    variant="subtitle1"
-                    component="div"
-                    sx={{ color: 'text.secondary', textAlign: 'left' }}
-                >
-                    {/* Calculate the total time in milliseconds */}
-                    {(() => {
-                    const timeDifference = new Date(endTime).getTime() - new Date(startTime).getTime();
-                    const totalMinutes = timeDifference / (1000 * 60);
-                    const hours = Math.floor(totalMinutes / 60); // Hours
-                    const minutes = Math.floor(totalMinutes % 60); // Remaining minutes
-                    return `Tid: ${hours}T ${minutes}M`; // Format as hours and minutes
-                    })()}
-
-                    {/* Display the total kilometers */}
-                    / Km: {(endKilometers - startKilometers).toFixed(0)}
-                </Typography>
+                {areValuesDefined(
+                    task.startKilometers,
+                    task.endKilometers,
+                    task.startTime,
+                    task.endTime
+                ) ? (
+                    <Typography
+                        variant="subtitle1"
+                        component="div"
+                        sx={{ color: "text.secondary", textAlign: "left" }}
+                    >
+                        Total Tid: {calculateTimeDifference(task.startTime, task.endTime)} <br /> Kilometer kørt:{" "}
+                        {calculateDistance(task.startKilometers, task.endKilometers)}
+                    </Typography>
+                ) : specialTask ? (
+                <p></p>
+                ) : (
+                    <Typography
+                        variant="subtitle1"
+                        component="div"
+                        sx={{ color: "text.secondary", textAlign: "left" }}
+                    >
+                        Tid og km er ikke angivet
+                    </Typography>
                 )}
             </CardContent>
           </Box>
