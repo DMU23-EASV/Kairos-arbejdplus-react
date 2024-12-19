@@ -418,7 +418,8 @@ const MainRegComp: React.FC<MainRegCompProp> = () => {
         taskObj.owner = sessionStorage.getItem("username")!.toString();
         taskObj.selecteDate = date?.toDate();
 
-        if(endTime != null){
+        console.log(endTime)
+        if(!(endTime.trim() === '')){
             taskObj.endTime = UtilityDateAndTime.convertTimeStringToDateType(date.toDate(), endTime); 
         }
 

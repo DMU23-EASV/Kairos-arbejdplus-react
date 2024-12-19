@@ -26,7 +26,7 @@ const History = () => {
                 Context.setTask(tasks);
                 setTasks(tasks);
             } catch (error) {
-                console.error("Failed to fetch tasks:", error);
+                console.error("Failed to fetch tasks, maybe no tasks?:", error);
             } finally {
                 setLoading(false);
             }
